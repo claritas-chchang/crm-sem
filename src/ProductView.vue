@@ -2,13 +2,32 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 
 const props = defineProps({
-  productCode: String
+  productCode: String,
+  isCreating: Boolean
 })
 
-const emit = defineEmits(['back'])
+const emit = defineEmits(['back', 'save'])
 
 const productType = ref('G')
 const typeOptions = ['G', 'Non-G']
+
+const isEditing = ref(props.isCreating)
+const tempProductType = ref(props.isCreating ? '' : productType.value)
+const localProductCode = ref('')
+
+const startEditing = () => {
+  tempProductType.value = productType.value
+  isEditing.value = true
+}
+
+const saveProduct = () => {
+  productType.value = tempProductType.value
+  isEditing.value = false
+}
+
+const cancelProductEdit = () => {
+  isEditing.value = false
+}
 
 const dimensions = ref([
   { name: 'Length', min: '24.45', max: '24.55', size: '24.5', uom: 'mm', tol: '0.05', minOnly: 'No', maxOnly: 'No', eq: 'Micrometer', samp: 'Level I, AQL 1%', type: 'Reduced', sampSize: '5', r1: '5', r2: '5', r3: '15', r4: '15', r5: '15', remarks: '-' },
@@ -138,69 +157,124 @@ onUnmounted(() => {
   window.removeEventListener('click', handleGlobalClick)
 })
 
+const showDeleteConfirm = ref(false)
+const rowToDeleteIdx = ref(-1)
+
+const removeDimension = (rowIdx) => {
+  rowToDeleteIdx.value = rowIdx
+  showDeleteConfirm.value = true
+}
+
+const confirmRemove = () => {
+  if (rowToDeleteIdx.value !== -1) {
+    dimensions.value.splice(rowToDeleteIdx.value, 1)
+  }
+  showDeleteConfirm.value = false
+  rowToDeleteIdx.value = -1
+}
+
+const cancelRemove = () => {
+  showDeleteConfirm.value = false
+  rowToDeleteIdx.value = -1
+}
+const goBack = () => {
+  emit('back')
+}
 </script>
 
 <template>
   <div class="view-panel">
     
     <div class="top-record-box">
+      <!-- Box 1 Header: Breadcrumbs -->
+      <div class="sub-header box-header">
+        <svg class="folder-svg" viewBox="0 0 24 24" width="16" height="16" fill="#666"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+        <span class="breadcrumb" style="font-size: 11px;">
+          <a href="#" class="item-link" @click.prevent="goBack" style="font-weight: bold; color: blue;">PRODUCT RECORDS</a> 
+          > <span style="font-weight: normal; color: #333;">{{ isCreating ? 'Create New' : productCode }}</span>
+        </span>
+      </div>
+
       <div class="top-actions">
-        <button class="btn btn-primary">EDIT</button>
-        <button class="btn btn-secondary" @click="emit('back')">Cancel</button>
+        <template v-if="!isEditing">
+          <button class="btn btn-primary" @click="startEditing">EDIT</button>
+          <button class="btn btn-secondary" @click="emit('back')">Cancel</button>
+        </template>
+        <template v-else>
+          <button class="btn btn-primary" @click="saveProduct">SAVE</button>
+          <button class="btn btn-secondary" @click="cancelProductEdit">Cancel</button>
+        </template>
       </div>
 
-      <!-- Top Details Wrapper -->
-    <div class="form-wrapper">
-      <!-- Product Details Section -->
-      <div class="section-container inner-section">
-        <div class="section-title">Product Details</div>
-        <div class="info-grid half">
-          <div class="grid-row">
-            <div class="grid-label">Product ID/Code</div>
-            <div class="grid-value">{{ productCode }}</div>
-          </div>
-          <div class="grid-row">
-            <div class="grid-label">Product Type</div>
-            <div class="grid-value">
-              <select v-model="productType" class="form-select">
-                <option v-for="opt in typeOptions" :key="opt" :value="opt">{{ opt }}</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
+      <div class="form-wrapper">
+        <!-- Product Details Section -->
+        <fieldset class="fsMargin">
+          <legend><b>Product Details</b></legend>
+          <table border="0" style="width: 100%; table-layout: fixed;">
+            <tbody>
+              <tr>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;">
+                  <span class="labelTitle">Product ID/Code</span>
+                </td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isCreating" class="field-value">{{ productCode }}</div>
+                  <input v-else type="text" v-model="localProductCode" class="edit-select" />
+                </td>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;">
+                  <span class="labelTitle">Product Type</span>
+                </td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ productType }}</div>
+                  <select v-else v-model="tempProductType" class="form-select" style="width: 80.4%; height: 22px;">
+                    <option v-for="opt in typeOptions" :key="opt" :value="opt">{{ opt }}</option>
+                  </select>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </fieldset>
 
-      <!-- System Information Section -->
-      <div class="section-container inner-section">
-        <div class="section-title">System Information</div>
-        <div class="info-grid">
-          <div class="grid-col">
-            <div class="grid-row">
-              <div class="grid-label">Created Date</div>
-              <div class="grid-value">16-March-2026 12:58:05 PM</div>
-            </div>
-            <div class="grid-row">
-              <div class="grid-label">Last Updated Date</div>
-              <div class="grid-value">16-March-2026 12:59:47 PM</div>
-            </div>
-          </div>
-          <div class="grid-col">
-            <div class="grid-row">
-              <div class="grid-label">Created By</div>
-              <div class="grid-value">qa-admin-p2</div>
-            </div>
-            <div class="grid-row">
-              <div class="grid-label">Last Updated By</div>
-              <div class="grid-value">qa-tech-p2</div>
-            </div>
-          </div>
-        </div>
+        <!-- System Information Section -->
+        <fieldset v-if="!isEditing" class="fsMargin">
+          <legend><b>System Information</b></legend>
+          <table border="0" style="width: 100%; table-layout: fixed;">
+            <tbody>
+              <tr>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;">
+                  <span class="labelTitle">Created Date</span>
+                </td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div class="field-value">16-March-2026 12:58:05 PM</div>
+                </td>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;">
+                  <span class="labelTitle">Created By</span>
+                </td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div class="field-value">qa-admin-p2</div>
+                </td>
+              </tr>
+              <tr>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;">
+                  <span class="labelTitle">Last Updated Date</span>
+                </td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div class="field-value">16-March-2026 12:59:47 PM</div>
+                </td>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;">
+                  <span class="labelTitle">Last Updated By</span>
+                </td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div class="field-value">qa-tech-p2</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </fieldset>
       </div>
-    </div>
     </div>
 
     <!-- Dimension List Section -->
-    <div class="sub-panel-wrapper">
+    <div v-if="!isCreating" class="sub-panel-wrapper">
       <div class="sub-panel-header" @click="toggleDimensionList">
         <span class="sub-panel-icon-btn">
           <svg style="vertical-align: middle; margin-right: 5px;" viewBox="0 0 24 24" width="14" height="14" fill="#333">
@@ -214,7 +288,7 @@ onUnmounted(() => {
       
       <div v-if="isDimensionListOpen" class="sub-panel-body">
         <div class="sub-panel-inner-box">
-          <div class="sub-actions">
+          <div class="sub-actions" style="padding: 5px 15px; border-bottom: 1px solid #ddd;">
             <span class="text-link" @click="openAddModal">Add New Dimension</span>
           </div>
 
@@ -222,6 +296,7 @@ onUnmounted(() => {
             <table class="data-table dim-table">
               <thead>
                 <tr>
+                  <th class="col-icon"></th>
                   <th>Name</th>
                   <th>Min Spec</th>
                   <th>Max Spec</th>
@@ -240,10 +315,14 @@ onUnmounted(() => {
                   <th>Rank 4 Size</th>
                   <th>Rank 5 Size</th>
                   <th>Remarks</th>
+                  <th>Remove</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="(d, idx) in dimensions" :key="idx">
+                  <td class="col-icon">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="#666" style="cursor: pointer;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                  </td>
                   <td>{{ d.name }}</td>
                   <td>{{ d.min }}</td>
                   <td>{{ d.max }}</td>
@@ -294,9 +373,33 @@ onUnmounted(() => {
                   <td>{{ d.r4 }}</td>
                   <td>{{ d.r5 }}</td>
                   <td>{{ d.remarks }}</td>
+                  <td style="text-align: center;">
+                    <button class="btn-remove" @click="removeDimension(idx)">
+                      <svg viewBox="0 0 24 24" width="12" height="12" fill="#d9534f" style="margin-right: 4px; vertical-align: middle;">
+                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                      </svg>
+                      Remove
+                    </button>
+                  </td>
                 </tr>
               </tbody>
             </table>
+          </div>
+
+          <!-- Pagination / Status Bar -->
+          <div class="pagination-bar">
+            <div class="page-controls">
+              <span class="pi pi-search">
+                 <svg viewBox="0 0 24 24" width="14" height="14" fill="#333"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+              </span>
+              <span class="p-btn"><svg viewBox="0 0 24 24" width="14" height="14" fill="#333"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></span>
+              <span class="p-btn"><svg viewBox="0 0 24 24" width="14" height="14" fill="#333"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg></span>
+              <span class="page-text">Page <input type="text" value="1" class="page-input" /> of 1</span>
+              <span class="p-btn"><svg viewBox="0 0 24 24" width="14" height="14" fill="#333"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg></span>
+              <span class="p-btn"><svg viewBox="0 0 24 24" width="14" height="14" fill="#333"><path d="M16 6v12h2V6zM6 18l8.5-6L6 6z"/></svg></span>
+              <span class="p-btn"><svg viewBox="0 0 24 24" width="14" height="14" fill="#333"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></span>
+              <span class="display-text" style="color: #444; margin-left:10px;">Displaying 1 to {{ dimensions.length }} of {{ dimensions.length }} items</span>
+            </div>
           </div>
         </div>
       </div>
@@ -433,27 +536,56 @@ onUnmounted(() => {
       </div>
     </div>
 
+    <!-- Custom Delete Confirmation Modal -->
+    <div class="modal-overlay centered-overlay" v-if="showDeleteConfirm">
+      <div class="confirm-banner">
+        <div class="confirm-message">Are you sure to remove?</div>
+        <div class="confirm-actions">
+          <button class="btn-ok" @click="confirmRemove">OK</button>
+          <button class="btn-cancel" @click="cancelRemove">Cancel</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .view-panel {
-  background-color: #f7f7f7;
+  background-color: #ffffff;
   min-height: calc(100vh - 130px);
   position: relative;
-  padding-top: 15px; /* Creates the gap below Sub Header */
+  padding-top: 10px;
+}
+
+.sub-header {
+  background-color: #c7c7c7; /* Changed from gradient to solid light grey */
+  padding: 6px 15px;
+  font-weight: bold;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 2px solid #fff;
+  color: #333;
+}
+
+.box-header {
+  background-color: #c7c7c7; /* Matched color to main list */
+  border-bottom: 2px solid #c7c7c7;
+  margin: -2px -2px 0 -2px;
 }
 
 .top-record-box {
   background-color: #fff;
-  border: 1px solid #a0a0a0;
+  border: 2px solid #c7c7c7; /* Updated to match main list */
   margin: 0 15px 15px 15px;
+  overflow: hidden;
 }
 
 .top-actions {
   display: flex;
   gap: 10px;
-  padding: 15px;
+  padding: 10px 15px;
   background-color: transparent;
 }
 
@@ -512,17 +644,39 @@ onUnmounted(() => {
   border-top: 10px solid #fff;
 }
 
-.section-container.no-padding {
-  margin-top: 15px;
+.fsMargin {
+  margin: 10px 15px 12px 15px;
+  border: 1px solid #E9E8E6;
+  padding: 10px;
+  background-color: #f1f1f1;
+}
+.fsMargin legend {
+  padding: 0 10px;
+  font-size: 13px;
+}
+.labelBack {
+  background-color: #DADADA;
+  padding: 2px 12px;
+  vertical-align: middle;
+}
+.labelTitle {
+  font-size: 13px;
+  color: black;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.field-value {
+  padding-left: 12px;
+  font-size: 13px;
+  color: #333;
 }
 
-.section-title {
-  font-weight: bold;
-  font-size: 13px;
-  margin-bottom: 0;
-  padding: 8px 15px;
-  background-color: #f0f0f0;
-  color: #333;
+.inner-section {
+  border: none;
+  margin: 0;
+}
+
+.inner-section + .inner-section {
+  border-top: 10px solid #fff;
 }
 
 /* Sub-panel styling */
@@ -531,13 +685,13 @@ onUnmounted(() => {
 }
 
 .sub-panel-header {
-  background-color: #d1d1d1;
+  background-color: #c7c7c7; /* Changed to match central style */
   padding: 6px 12px;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
-  border: 1px solid #a0a0a0;
+  border: 2px solid #c7c7c7; /* Thicker and softer color */
 }
 
 .sub-panel-header:hover {
@@ -551,18 +705,18 @@ onUnmounted(() => {
 }
 
 .sub-panel-body {
-  background-color: #f7f7f7;
+  background-color: #ffffff;
   padding: 10px 0;
-  border-left: 1px solid #a0a0a0;
-  border-right: 1px solid #a0a0a0;
-  border-bottom: 1px solid #a0a0a0;
+  border-left: 2px solid #c7c7c7;
+  border-right: 2px solid #c7c7c7;
+  border-bottom: 2px solid #c7c7c7;
 }
 
 .sub-panel-inner-box {
   background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 2px;
-  margin: 0 10px;
+  margin: 0 15px 10px 15px; /* Matched to fieldset's horizontal margin */
 }
 
 .info-grid {
@@ -772,5 +926,108 @@ input.form-input[type="text"] {
 .editable-text:hover {
   outline: 1px dotted #a0a0a0;
   background-color: #fafafa;
+}
+
+.pagination-bar {
+  background-color: #f7f7f7;
+  border-top: 1px solid #ddd;
+  padding: 4px 10px;
+}
+
+.page-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.p-btn {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.page-text {
+  color: #333;
+}
+
+.page-input {
+  width: 35px;
+  height: 18px;
+  border: 1px solid #ccc;
+  text-align: center;
+  font-size: 11px;
+}
+
+.btn-remove {
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  padding: 1px 6px;
+  font-size: 11px;
+  cursor: pointer;
+  color: #333;
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn-remove:hover {
+  background-color: #f9f9f9;
+  border-color: #bbb;
+}
+
+/* Custom confirmation modal specific styles */
+.centered-overlay {
+  align-items: center;
+  padding-top: 0;
+}
+
+.confirm-banner {
+  background-color: #fff;
+  width: 100%;
+  max-width: 1200px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+}
+
+.confirm-message {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 25px;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.btn-ok {
+  background-color: #69d17d; /* Green matching photo */
+  color: white;
+  border: none;
+  padding: 8px 45px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+.btn-cancel {
+  background-color: #a5a5a5; /* Grey matching photo */
+  color: white;
+  border: none;
+  padding: 8px 45px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+.btn-ok:hover {
+  background-color: #5cb85c;
+}
+
+.btn-cancel:hover {
+  background-color: #888;
 }
 </style>

@@ -19,7 +19,7 @@ body {
   font-family: var(--font-family);
   font-size: 12px;
   color: var(--text-main);
-  background-color: var(--bg-grey);
+  background-color: #ffffff;
 }
 
 .app-container {
@@ -109,13 +109,76 @@ body {
   background-color: #8f1619;
 }
 
+.nav-item-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 5px;
+  background-color: #fff;
+  min-width: 220px;
+  box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+  z-index: 1000;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-top: 17px;
+  overflow: visible;
+}
+
+.dropdown-content::before {
+  content: "";
+  position: absolute;
+  top: -17px;
+  left: 0;
+  width: 100%;
+  height: 17px;
+}
+
+.nav-item-dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown-item {
+  color: #444 !important;
+  padding: 12px 16px !important;
+  text-decoration: none !important;
+  display: block !important;
+  font-size: 12px !important;
+  font-weight: normal !important;
+  text-transform: uppercase;
+  background-color: #fff !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.dropdown-item:first-child {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.dropdown-item:hover {
+  background-color: #f1f1f1 !important;
+}
+
 .main-nav a.active {
   background-color: #8f1619;
 }
 
 /* Sub Header */
 .sub-header {
-  background: linear-gradient(to bottom, #f2f2f2 0%, #dcdcdc 100%);
+  background-color: #c7c7c7; /* Changed from #d1d1d1 to #c7c7c7 */
   padding: 6px 15px;
   font-weight: bold;
   font-size: 12px;
@@ -239,6 +302,10 @@ body {
   overflow-x: auto;
 }
 
+.selected-row td {
+  background-color: #f2dfe1 !important;
+}
+
 .data-table {
   width: 100%;
   border-collapse: collapse;
@@ -260,8 +327,12 @@ body {
   font-size: 11px;
 }
 
+.data-table tr:nth-child(even) {
+  background-color: #f7f7f7;
+}
+
 .data-table tr:hover {
-  background-color: #f9f9f9;
+  background-color: #f2f2f2;
 }
 
 .col-checkbox, .col-icon {
@@ -276,4 +347,137 @@ body {
 
 .item-link:hover {
   color: #003399;
+}
+
+/* Centralized Box Design Pattern */
+.top-record-box {
+  background-color: #fff;
+  border: 2px solid #c7c7c7;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.box-header {
+  background-color: #c7c7c7;
+  padding: 6px 15px;
+  font-weight: bold;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 2px solid #c7c7c7;
+  margin: -2px -2px 0 -2px;
+  color: #333;
+}
+
+.box-panel {
+  padding: 15px;
+  background-color: #ffffff;
+}
+
+.inner-box {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+}
+
+/* Toolbar Tiers */
+.toolbar-row {
+  padding: 8px 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+.action-row {
+  background-color: #f7f7f7;
+}
+
+.search-row {
+  background-color: #ffffff;
+}
+
+.no-margin {
+  margin-bottom: 0 !important;
+}
+
+.action-link {
+  color: var(--text-main);
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.action-link:hover {
+  color: #8f3235;
+  text-decoration: none;
+}
+
+/* Pagination / Status Area */
+.pagination-bar {
+  background-color: #f7f7f7;
+  border-top: 1px solid #ddd;
+  padding: 4px 10px;
+}
+
+.page-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.p-btn {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.page-text {
+  color: #333;
+}
+
+.page-input {
+  width: 35px;
+  height: 18px;
+  border: 1px solid #ccc;
+  text-align: center;
+  font-size: 11px;
+}
+
+.display-text {
+  color: #444;
+  margin-left: 10px;
+}
+
+/* Detail Record Design Pattern (Fieldsets/Legends) */
+.fsMargin {
+  margin: 10px 15px 12px 15px;
+  border: 1px solid #E9E8E6;
+  padding: 10px;
+  background-color: #f1f1f1;
+}
+.fsMargin legend {
+  padding: 0 10px;
+  font-size: 13px;
+}
+.labelBack {
+  background-color: #DADADA;
+  padding: 2px 12px;
+  vertical-align: middle;
+}
+.labelTitle {
+  font-size: 13px;
+  color: black;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.field-value {
+  padding-left: 12px;
+  font-size: 13px;
+  color: #333;
+}
+
+.edit-select {
+  padding: 2px 4px;
+  font-size: 12px;
+  border: 1px solid #ccc;
+  width: 100%;
 }
