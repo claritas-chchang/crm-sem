@@ -4,6 +4,10 @@ import ProductView from './ProductView.vue'
 import ValidationView from './ValidationView.vue'
 import InspectionView from './InspectionView.vue'
 import SamplingLevelView from './SamplingLevelView.vue'
+import ErasureView from './ErasureView.vue'
+import ErasureDetailView from './ErasureDetailView.vue'
+import MagneticPropertiesView from './MagneticPropertiesView.vue'
+import MagneticPropertiesDetailView from './MagneticPropertiesDetailView.vue'
 
 const currentModule = ref('product')
 
@@ -79,14 +83,78 @@ const viewProduct = (code) => {
 const backToList = () => {
   currentView.value = 'list'
   selectedProductCode.value = ''
+  selectedErasureRecord.value = null
 }
 
 const editProduct = (code) => {
   alert(`Editing product: ${code}`)
 }
 
-const toggleRowSelection = (item) => {
-  item.selected = !item.selected
+// ERASURE MODULE STATE
+const erasureRecords = ref([
+  { 
+    id: 'ER-001', 
+    date: '2026-03-27', 
+    time: '10:00', 
+    shift: 'Day', 
+    type: 'Environment Washing', 
+    area: 'Clean Room', 
+    results: 'Pass', 
+    performer: 'John Doe', 
+    confirmer: 'Jane Smith', 
+    onePerDay: 'Completed', 
+    twoPerShift: 'Completed', 
+    spec: 'Standard', 
+    method: 'Chemical', 
+    remarks: 'N/A', 
+    createdTs: '27-March-2026 09:00:00 AM', 
+    createdBy: 'qa-admin', 
+    updatedTs: '27-March-2026 11:00:00 AM', 
+    updatedBy: 'qa-tech', 
+    selected: false 
+  }
+])
+const selectedErasureRecord = ref(null)
+const handleOpenErasureDetail = (record) => {
+  selectedErasureRecord.value = record
+  currentView.value = 'view'
+}
+const handleOpenErasureCreate = () => {
+  selectedErasureRecord.value = { id: 'ER-' + (erasureRecords.value.length + 1).toString().padStart(3, '0') }
+  currentView.value = 'create'
+}
+const handleSaveErasure = (record) => {
+  const idx = erasureRecords.value.findIndex(r => r.id === record.id)
+  if (idx !== -1) {
+    erasureRecords.value[idx] = record
+  } else {
+    erasureRecords.value.push({ ...record, selected: false, createdBy: 'qa-admin', createdTs: new Date().toLocaleString() })
+  }
+  currentView.value = 'list'
+}
+// MAGNETIC PROPERTIES MODULE STATE
+const magPropRecords = ref([
+  { id: 1, code: 'MAG001', type: 'G', selected: false },
+  { id: 2, code: 'MAG002', type: 'Non-G', selected: false },
+])
+const selectedMagPropRecord = ref(null)
+
+const handleOpenMagPropDetail = (record) => {
+  selectedMagPropRecord.value = record
+  currentView.value = 'view'
+}
+const handleOpenMagPropCreate = () => {
+  selectedMagPropRecord.value = { code: '', type: 'G' }
+  currentView.value = 'create'
+}
+const handleSaveMagProp = (record) => {
+  const idx = magPropRecords.value.findIndex(r => r.id === record.id)
+  if (idx !== -1) {
+    magPropRecords.value[idx] = record
+  } else {
+    magPropRecords.value.push({ ...record, id: magPropRecords.value.length + 1, selected: false })
+  }
+  currentView.value = 'list'
 }
 </script>
 
@@ -111,7 +179,7 @@ const toggleRowSelection = (item) => {
     <nav class="main-nav">
       <a href="#" :class="{ active: currentModule === 'validation' }" @click.prevent="currentModule = 'validation'; currentView = 'list'">VALIDATION</a>
       <a href="#" :class="{ active: currentModule === 'inspection' }" @click.prevent="currentModule = 'inspection'; currentView = 'list'">INSPECTION</a>
-      <a href="#">ERASURE</a>
+      <a href="#" :class="{ active: currentModule === 'erasure' }" @click.prevent="currentModule = 'erasure'; currentView = 'list'">ERASURE</a>
       <a href="#">RELIABILITY</a>
       <a href="#" :class="{ active: currentModule === 'samplingLevel' }" @click.prevent="currentModule = 'samplingLevel'; currentView = 'list'">SAMPLING LEVEL</a>
       <a href="#" :class="{ active: currentModule === 'product' }" @click.prevent="currentModule = 'product'; currentView = 'list'">PRODUCT RECORDS</a>
@@ -122,7 +190,7 @@ const toggleRowSelection = (item) => {
           <a href="#" class="dropdown-item">Shipment Type B</a>
         </div>
       </div>
-      <a href="#">MAGNETIC PROPERTIES</a>
+      <a href="#" :class="{ active: currentModule === 'magProp' }" @click.prevent="currentModule = 'magProp'; currentView = 'list'">MAGNETIC PROPERTIES</a>
       <a href="#">CALIBRATION</a>
     </nav>
 
@@ -135,6 +203,18 @@ const toggleRowSelection = (item) => {
 
       <!-- SAMPLING LEVEL MODULE -->
       <SamplingLevelView v-else-if="currentModule === 'samplingLevel'" />
+
+      <!-- ERASURE MODULE -->
+      <template v-else-if="currentModule === 'erasure'">
+        <ErasureView v-if="currentView === 'list'" :records="erasureRecords" @open-create="handleOpenErasureCreate" @open-detail="handleOpenErasureDetail" />
+        <ErasureDetailView v-else :record="selectedErasureRecord" :isCreating="currentView === 'create'" @back="backToList" @save="handleSaveErasure" />
+      </template>
+
+      <!-- MAGNETIC PROPERTIES MODULE -->
+      <template v-else-if="currentModule === 'magProp'">
+        <MagneticPropertiesView v-if="currentView === 'list'" :records="magPropRecords" @open-create="handleOpenMagPropCreate" @open-detail="handleOpenMagPropDetail" />
+        <MagneticPropertiesDetailView v-else :record="selectedMagPropRecord" :isCreating="currentView === 'create'" @back="backToList" @save="handleSaveMagProp" />
+      </template>
 
       <!-- PRODUCT RECORDS MODULE -->
       <template v-else-if="currentModule === 'product'">
@@ -236,14 +316,14 @@ const toggleRowSelection = (item) => {
 
 .top-record-box {
   background-color: #fff;
-  border: 2px solid #c7c7c7; /* Updated from 1px solid #a0a0a0 */
+  border: 2px solid #c7c7c7;
   margin-bottom: 20px;
 }
 
 .box-header {
-  background-color: #c7c7c7; /* Lightened from #a0a0a0 */
-  border-bottom: 2px solid #c7c7c7; /* Sync header border with box border */
-  margin: -2px -2px 0 -2px; /* Adjust margin for 2px thick border */
+  background-color: #c7c7c7;
+  border-bottom: 2px solid #c7c7c7;
+  margin: -2px -2px 0 -2px;
 }
 
 .list-panel {
@@ -264,7 +344,7 @@ const toggleRowSelection = (item) => {
 }
 
 .action-row {
-  background-color: #f7f7f7; /* Changed to lighter grey matching table stripes */
+  background-color: #f7f7f7;
 }
 
 .search-row {
@@ -272,7 +352,7 @@ const toggleRowSelection = (item) => {
 }
 
 .action-link:hover {
-  color: #8f3235; /* Dark red matching photo hover colors */
+  color: #8f3235;
   text-decoration: none;
 }
 
