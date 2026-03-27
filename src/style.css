@@ -5,7 +5,7 @@
   --bg-grey: #e9e9e9;
   --border-color: #d1d1d1;
   --text-main: #333333;
-  --link-color: #0055cc;
+  --link-color: #0000EE;
   --font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -341,7 +341,7 @@ body {
 }
 
 .item-link {
-  color: var(--link-color);
+  color: #0000EE;
   text-decoration: underline;
 }
 
@@ -461,7 +461,7 @@ body {
 }
 .labelBack {
   background-color: #DADADA;
-  padding: 2px 12px;
+  padding: 4px 12px;
   vertical-align: middle;
 }
 .labelTitle {
@@ -479,5 +479,5 @@ body {
   padding: 2px 4px;
   font-size: 12px;
   border: 1px solid #ccc;
-  width: 100%;
+  width: 80%;
 }

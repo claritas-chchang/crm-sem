@@ -77,10 +77,10 @@ const handleSave = (updated) => {
 </script>
 
 <template>
-  <div v-if="currentView === 'list'" class="top-record-box no-margin">
+  <div v-if="currentView === 'list'" class="top-record-box no-margin custom-sampling-view">
     <div class="sub-header box-header">
       <svg class="folder-svg" viewBox="0 0 24 24" width="16" height="16" fill="#666"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
-      <span style="font-size: 11px;">SAMPLING LEVEL RECORDS</span>
+      <span style="font-size: 14px;">SAMPLING LEVEL RECORDS</span>
     </div>
 
     <div class="box-panel">
@@ -91,17 +91,17 @@ const handleSave = (updated) => {
               <span class="action-link">Actions</span>
             </div>
             <span class="action-link" @click.prevent="openCreate">Create New</span>
-            <span class="selected-text" style="font-size: 11px; margin-left: 5px;">Selected: {{ numSelected }}</span>
+            <span class="selected-text">Selected: {{ numSelected }}</span>
           </div>
         </div>
 
         <div class="search-row toolbar-row">
           <div class="search-bar no-margin" style="display: flex; gap: 10px; align-items: center;">
-            <select class="search-select" v-model="selectedFilter" style="font-size: 11px; padding: 2px;">
+            <select class="search-select" v-model="selectedFilter">
               <option v-for="opt in filterOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
             </select>
-            <input type="text" class="search-input" v-model="searchQuery" style="margin-left: 5px; height: 18px;" />
-            <button class="search-btn" style="margin-left: 5px; font-size: 11px; padding: 2px 10px;">SEARCH</button>
+            <input type="text" class="search-input" v-model="searchQuery" />
+            <button class="search-btn">SEARCH</button>
           </div>
         </div>
 
@@ -120,10 +120,10 @@ const handleSave = (updated) => {
                 <th>Rank 3 Size</th>
                 <th>Rank 4 Size</th>
                 <th>Rank 5 Size</th>
-                <th>Creation Date</th>
+                <th>Created Date</th>
                 <th>Created By</th>
-                <th>Updated Date</th>
-                <th>Updated By</th>
+                <th>Last Updated Date</th>
+                <th>Last Updated By</th>
               </tr>
             </thead>
             <tbody>
@@ -164,11 +164,11 @@ const handleSave = (updated) => {
             <span class="p-btn"><svg viewBox="0 0 24 24" width="14" height="14" fill="#333"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></span>
             <span class="p-btn"><svg viewBox="0 0 24 24" width="14" height="14" fill="#333"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></span>
             <span class="p-btn"><svg viewBox="0 0 24 24" width="14" height="14" fill="#333"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg></span>
-            <span class="page-text" style="font-size: 11px;">Page <input type="text" value="1" class="page-input" /> of 1</span>
+            <span class="page-text">Page <input type="text" value="1" class="page-input" /> of 1</span>
             <span class="p-btn"><svg viewBox="0 0 24 24" width="14" height="14" fill="#333"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg></span>
             <span class="p-btn"><svg viewBox="0 0 24 24" width="14" height="14" fill="#333"><path d="M16 6v12h2V6zM6 18l8.5-6L6 6z"/></svg></span>
             <span class="p-btn"><svg viewBox="0 0 24 24" width="14" height="14" fill="#333"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></span>
-            <span class="display-text" style="font-size: 11px;">Displaying 1 to {{ filteredRecords.length }} of {{ filteredRecords.length }} items</span>
+            <span class="display-text">Displaying 1 to {{ filteredRecords.length }} of {{ filteredRecords.length }} items</span>
           </div>
         </div>
       </div>
@@ -178,18 +178,33 @@ const handleSave = (updated) => {
 </template>
 
 <style scoped>
-.top-record-box {
+.custom-sampling-view {
+  --header-dark: #2c2a29;
+  --header-red: #a51c22;
+  --nav-active: #811317;
+  --bg-grey: #e9e9e9;
+  --border-color: #d1d1d1;
+  --text-main: #333333;
+  --link-color: #0055cc;
+  --font-family: Arial, Helvetica, sans-serif;
+  
+  font-family: var(--font-family);
+  font-size: 12px;
+  color: var(--text-main);
+  box-sizing: border-box;
+  margin: 0 15px 15px 15px; /* Requested margin */
+  
   background-color: #fff;
-  border: 2px solid #c7c7c7;
-  margin: 15px;
+  border: 2px solid var(--border-color);
   overflow: hidden;
 }
+
 .box-header {
-  margin: -2px -2px 0 -2px;
+  margin: -1px -1px 0 -1px;
 }
 .toolbar-row {
   padding: 8px 15px;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--border-color);
 }
 .action-row {
   background-color: #f7f7f7;
@@ -200,12 +215,13 @@ const handleSave = (updated) => {
   align-items: center;
 }
 .action-link {
-  color: #333;
+  color: var(--text-main);
   text-decoration: none;
   cursor: pointer;
-  font-size: 11px;
+  font-size: 12px;
 }
 .action-link:hover {
+  color: var(--header-red);
   text-decoration: underline;
 }
 .search-row {
@@ -217,31 +233,71 @@ const handleSave = (updated) => {
   align-items: center;
 }
 .search-select, .page-input {
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color);
   border-radius: 2px;
-  font-size: 11px;
+  font-size: 12px;
+  height: 24px;
 }
-.selected-text {
-  font-size: 11px;
-  color: #444;
+.search-input {
+  border: 1px solid var(--border-color);
+  border-radius: 2px;
+  font-size: 12px;
+  height: 24px;
+  padding: 0 8px;
+}
+.search-btn {
+  background-color: var(--header-red);
+  color: #fff;
+  border: none;
+  padding: 4px 15px;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 2px;
+  cursor: pointer;
+}
+.selected-text, .page-text, .display-text {
+  font-size: 12px;
+  color: var(--text-main);
 }
 .table-area {
   overflow-x: auto;
+}
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.data-table th {
+  background-color: #eeeeee;
+  border: 1px solid var(--border-color);
+  padding: 8px;
+  text-align: left;
+  font-weight: bold;
+}
+.data-table td {
+  border: 1px solid var(--border-color);
+  padding: 8px;
+}
+.item-link {
+  color: var(--link-color);
+  text-decoration: none;
+}
+.item-link:hover {
+  text-decoration: underline;
 }
 .selected-row td {
   background-color: #f2dfe1 !important;
 }
 .pagination-bar {
   background-color: #f7f7f7;
-  border-top: 1px solid #ddd;
-  padding: 4px 10px;
+  border-top: 1px solid var(--border-color);
+  padding: 6px 15px;
 }
 .page-controls {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 11px;
+  gap: 10px;
 }
 .p-btn { display: flex; align-items: center; cursor: pointer; }
-.page-input { width: 35px; height: 18px; border: 1px solid #ccc; text-align: center; font-size: 11px; }
+.page-input { width: 40px; text-align: center; }
 </style>

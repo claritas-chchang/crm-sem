@@ -56,18 +56,18 @@ const typeOptions = ['--Please Select One--', 'Reduced', 'Normal']
 </script>
 
 <template>
-  <div class="top-record-box">
-    <!-- Breadcrumbs Header (Matches Validation/Product exactly) -->
+  <div class="top-record-box custom-sampling-detail">
+    <!-- Breadcrumbs -->
     <div class="sub-header box-header">
       <svg class="folder-svg" viewBox="0 0 24 24" width="16" height="16" fill="#666"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
-      <span class="breadcrumb" style="font-size: 11px;">
-        <a href="#" class="item-link" @click.prevent="goBack" style="font-weight: bold; color: blue;">SAMPLING LEVEL RECORDS</a> 
-        > <span style="font-weight: normal; color: #333;">{{ isCreating ? 'Create New' : localRecord.name }}</span>
+      <span class="breadcrumb">
+        <a href="#" class="item-link" @click.prevent="goBack" style="font-weight: bold; color: #0000EE; text-decoration: underline;">SAMPLING LEVEL RECORDS</a> 
+        &gt; <span class="current-page">{{ isCreating ? 'Create New' : localRecord.name }}</span>
       </span>
     </div>
 
-    <!-- Top Action Bar (Matches Validation/Product exactly) -->
-    <div class="top-actions" style="padding: 10px 15px; margin-bottom: 5px;">
+    <!-- Actions -->
+    <div class="top-actions">
       <template v-if="!isEditing">
         <button class="btn btn-primary" @click="startEdit">EDIT</button>
         <button class="btn btn-secondary" @click="goBack">Cancel</button>
@@ -79,38 +79,21 @@ const typeOptions = ['--Please Select One--', 'Reduced', 'Normal']
     </div>
 
     <div class="sub-panel-wrapper">
-      <!-- Section: Sampling Level Details -->
-      <fieldset class="fsMargin" style="margin: 0 0 15px 0;">
+      <fieldset class="fsMargin">
         <legend><b>Sampling Level Details</b></legend>
         <table border="0" style="width: 100%; table-layout: fixed;">
           <tbody>
             <tr>
               <td class="labelBack" style="width: 16%;"><span class="labelTitle">Sampling Name</span></td>
-              <td style="width: 34%;">
-                <div v-if="!isEditing" class="field-value">{{ localRecord.name }}</div>
-                <select v-else v-model="localRecord.name" class="edit-select">
-                  <option v-for="opt in samplingNameOptions" :value="opt" :key="opt">{{ opt }}</option>
-                </select>
-              </td>
+              <td style="width: 34%;"><div v-if="!isEditing" class="field-value">{{ localRecord.name }}</div><select v-else v-model="localRecord.name" class="edit-select"><option v-for="opt in samplingNameOptions" :value="opt" :key="opt">{{ opt }}</option></select></td>
               <td class="labelBack" style="width: 16%;"><span class="labelTitle">Qty</span></td>
-              <td style="width: 34%;">
-                <div v-if="!isEditing" class="field-value">{{ localRecord.qty }}</div>
-                <input v-else type="text" v-model="localRecord.qty" class="edit-select" />
-              </td>
+              <td style="width: 34%;"><div v-if="!isEditing" class="field-value">{{ localRecord.qty }}</div><input v-else type="text" v-model="localRecord.qty" class="edit-select" /></td>
             </tr>
             <tr>
               <td class="labelBack"><span class="labelTitle">Type</span></td>
-              <td>
-                <div v-if="!isEditing" class="field-value">{{ localRecord.type }}</div>
-                <select v-else v-model="localRecord.type" class="edit-select">
-                  <option v-for="opt in typeOptions" :value="opt" :key="opt">{{ opt }}</option>
-                </select>
-              </td>
+              <td><div v-if="!isEditing" class="field-value">{{ localRecord.type }}</div><select v-else v-model="localRecord.type" class="edit-select"><option v-for="opt in typeOptions" :value="opt" :key="opt">{{ opt }}</option></select></td>
               <td class="labelBack"><span class="labelTitle">Sampling Size</span></td>
-              <td>
-                <div v-if="!isEditing" class="field-value">{{ localRecord.sSize }}</div>
-                <input v-else type="text" v-model="localRecord.sSize" class="edit-select" />
-              </td>
+              <td><div v-if="!isEditing" class="field-value">{{ localRecord.sSize }}</div><input v-else type="text" v-model="localRecord.sSize" class="edit-select" /></td>
             </tr>
             <tr>
               <td class="labelBack"><span class="labelTitle">Rank 1 Sampling Size</span></td>
@@ -127,27 +110,27 @@ const typeOptions = ['--Please Select One--', 'Reduced', 'Normal']
             <tr>
               <td class="labelBack"><span class="labelTitle">Rank 5 Sampling Size</span></td>
               <td><div v-if="!isEditing" class="field-value">{{ localRecord.r5 }}</div><input v-else type="text" v-model="localRecord.r5" class="edit-select" /></td>
-              <td colspan="2"></td>
+              <td class="labelBack"><span class="labelTitle"></span></td>
+              <td></td>
             </tr>
           </tbody>
         </table>
       </fieldset>
 
-      <!-- System Information Section (Only visible in View mode) -->
-      <fieldset v-if="!isEditing" class="fsMargin" style="margin: 0 0 15px 0;">
+      <fieldset v-if="!isEditing" class="fsMargin">
         <legend><b>System Information</b></legend>
         <table border="0" style="width: 100%; table-layout: fixed;">
           <tbody>
             <tr>
-              <td class="labelBack" style="width: 16%; height: 20px;"><span class="labelTitle">Creation Date</span></td>
+              <td class="labelBack" style="width: 16%; height: 24px;"><span class="labelTitle">Created Date</span></td>
               <td style="width: 34%;"><div class="field-value">{{ localRecord.creationDate || '16-March-2026 12:58:05 PM' }}</div></td>
               <td class="labelBack" style="width: 16%;"><span class="labelTitle">Created By</span></td>
               <td style="width: 34%;"><div class="field-value">{{ localRecord.createdBy || 'qa-admin-p2' }}</div></td>
             </tr>
             <tr>
-              <td class="labelBack" style="width: 16%; height: 20px;"><span class="labelTitle">Updated Date</span></td>
+              <td class="labelBack" style="width: 16%; height: 24px;"><span class="labelTitle">Last Updated Date</span></td>
               <td><div class="field-value">{{ localRecord.updatedDate || '16-March-2026 12:59:47 PM' }}</div></td>
-              <td class="labelBack" style="width: 16%;"><span class="labelTitle">Updated By</span></td>
+              <td class="labelBack" style="width: 16%;"><span class="labelTitle">Last Updated By</span></td>
               <td><div class="field-value">{{ localRecord.updatedBy || 'qa-tech-p2' }}</div></td>
             </tr>
           </tbody>
@@ -158,27 +141,40 @@ const typeOptions = ['--Please Select One--', 'Reduced', 'Normal']
 </template>
 
 <style scoped>
-.top-record-box {
+.custom-sampling-detail {
+  --header-red: #a51c22;
+  --border-color: #d1d1d1;
+  --link-color: #0055cc;
+  --font-family: Arial, Helvetica, sans-serif;
+  
+  font-family: var(--font-family);
+  font-size: 13px;
+  color: #333;
+  box-sizing: border-box;
+  margin: 0 15px 15px 15px;
   background-color: #fff;
-  border: 2px solid #c7c7c7;
-  margin: 15px;
+  border: 2px solid var(--border-color);
   overflow: hidden;
 }
+
 .box-header {
-  margin: -2px -2px 0 -2px;
-  background: white;
+  margin: -1px -1px 0 -1px;
+  background-color: #c7c7c7;
   padding: 8px 15px;
-  border-bottom: 2px solid #ddd;
+  border-bottom: 3px solid #fff;
   display: flex;
   align-items: center;
   gap: 8px;
 }
-.breadcrumb { font-size: 11px; }
+.breadcrumb { font-size: 14px; font-weight: bold; }
+.breadcrumb .item-link { color: var(--link-color); text-decoration: none; }
+.current-page { font-weight: normal; color: #333; }
 
 .top-actions {
   display: flex;
   gap: 10px;
-  background-color: transparent;
+  padding: 10px 15px;
+  background-color: #fff;
 }
 .btn {
   padding: 8px 18px;
@@ -188,14 +184,14 @@ const typeOptions = ['--Please Select One--', 'Reduced', 'Normal']
   border-radius: 2px;
   cursor: pointer;
 }
-.btn-primary { background-color: #8f3235; color: white; }
+.btn-primary { background-color: var(--header-red); color: white; }
 .btn-secondary { background-color: #a5a5a5; color: white; }
 
 .sub-panel-wrapper {
-  margin: 0 15px 15px 15px;
+  margin: 15px;
 }
 .fsMargin {
-  margin: 0 0 15px 0;
+  margin: 0px 0px 15px;
   border: 1px solid #E9E8E6;
   padding: 10px;
   background-color: #f1f1f1;
@@ -209,9 +205,9 @@ const typeOptions = ['--Please Select One--', 'Reduced', 'Normal']
   padding: 4px 12px;
   vertical-align: middle;
 }
-.labelTitle { font-size: 11px; font-weight: bold; color: black; font-family: Arial, Helvetica, sans-serif; }
-.field-value { padding-left: 12px; font-size: 13px; color: #333; }
-.edit-select { width: 100%; padding: 4px; border: 1px solid #ccc; font-size: 13px; box-sizing: border-box; }
-.item-link { color: blue; text-decoration: none; font-weight: bold; }
+.labelTitle { font-size: 13px; font-weight: normal; color: black; font-family: var(--font-family); } /* font-weight removed/set to normal */
+.field-value { padding: 4px 12px; font-size: 13px; color: #333; font-family: var(--font-family); }
+.edit-select { width: 80%; padding: 4px; border: 1px solid #ccc; font-size: 13px; box-sizing: border-box; }
+.item-link { color: #0000EE; text-decoration: none; font-weight: bold; }
 .item-link:hover { text-decoration: underline; }
 </style>

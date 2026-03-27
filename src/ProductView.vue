@@ -189,8 +189,8 @@ const goBack = () => {
       <!-- Box 1 Header: Breadcrumbs -->
       <div class="sub-header box-header">
         <svg class="folder-svg" viewBox="0 0 24 24" width="16" height="16" fill="#666"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
-        <span class="breadcrumb" style="font-size: 11px;">
-          <a href="#" class="item-link" @click.prevent="goBack" style="font-weight: bold; color: blue;">PRODUCT RECORDS</a> 
+        <span class="breadcrumb" style="font-size: 14px;">
+          <a href="#" class="item-link" @click.prevent="goBack" style="font-weight: bold; color: #0000EE;">PRODUCT RECORDS</a> 
           > <span style="font-weight: normal; color: #333;">{{ isCreating ? 'Create New' : productCode }}</span>
         </span>
       </div>
@@ -656,7 +656,7 @@ const goBack = () => {
 }
 .labelBack {
   background-color: #DADADA;
-  padding: 2px 12px;
+  padding: 4px 12px;
   vertical-align: middle;
 }
 .labelTitle {

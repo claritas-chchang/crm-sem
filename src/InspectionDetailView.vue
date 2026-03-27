@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 
 const props = defineProps({
   record: Object,
@@ -41,7 +41,7 @@ const goBack = () => {
   emit('back')
 }
 
-// Sub-panel Dimension List logic
+// Sub-panel 1: Product Dimension List logic
 const isDimensionListOpen = ref(true)
 const toggleDimensionList = () => {
   isDimensionListOpen.value = !isDimensionListOpen.value
@@ -65,6 +65,39 @@ const dimensions = ref([
   { name: 'Magnetized Condition', min: '-', max: '-', size: '-', uom: 'remarks', minTol: '-', maxTol: '-', minOnly: '-', maxOnly: '-', eq: 'Green Paper', sampSize: '-', remarks: 'Fully magnetized & no sign of abnormal grain growth' },
   { name: 'Marking Position', min: '-', max: '-', size: '-', uom: 'remarks', minTol: '-', maxTol: '-', minOnly: '-', maxOnly: '-', eq: 'Naked eyes', sampSize: '-', remarks: 'Position: Horizontal RED line, along the top area of W x T surface, with N-pole facing upwards.' },
   { name: 'Marking Color', min: '-', max: '-', size: '-', uom: 'remarks', minTol: '-', maxTol: '-', minOnly: '-', maxOnly: '-', eq: 'Naked eyes', sampSize: '-', remarks: 'Red' }
+])
+
+// Sub-panel 2: Inspected Dimension List logic
+const isInspectedDimensionListOpen = ref(true)
+const toggleInspectedDimensionList = () => {
+  isInspectedDimensionListOpen.value = !isInspectedDimensionListOpen.value
+}
+
+const inspectedDimensions = ref([
+  { 
+    itemNo: '1', 
+    name: 'Length', 
+    eqName: 'Micrometer', 
+    eqSerial: 'MIC-001', 
+    minSpec: '24.47', 
+    maxSpec: '24.55', 
+    sampSize: '5', 
+    testsPerSamp: '3', 
+    farthestResult: '24.52', 
+    maxResult: '24.54', 
+    sumMax: '24.54', 
+    sumMin: '24.48', 
+    sumAvg: '24.51', 
+    stdDev: '0.02', 
+    cp: '1.33', 
+    cpk: '1.25', 
+    rank: 'A', 
+    judgement: 'OK', 
+    createdBy: 'qa-admin', 
+    createdTs: '2026-03-27 10:00', 
+    updatedBy: 'qa-tech', 
+    updatedTs: '2026-03-27 11:00' 
+  }
 ])
 
 const uomOptions = ['mm', 'μm', 'g', 'degree', 'N/m', 'remarks']
@@ -91,10 +124,13 @@ const cancelGridEdit = () => {
 
 const handleGlobalClick = (e) => {
   if (editingCell.value.rowIdx === -1) return
-  // If click is outside both the edit box and the triggering text, cancel
   if (!e.target.closest('.inline-edit') && !e.target.closest('.editable-text')) {
     cancelGridEdit()
   }
+}
+
+const openAddModal = () => {
+  alert('Add Dimension to be Inspected clicked. (Modal Logic to be implemented)')
 }
 
 onMounted(() => {
@@ -111,9 +147,9 @@ onUnmounted(() => {
     <!-- Breadcrumbs -->
     <div class="sub-header box-header">
       <svg class="folder-svg" viewBox="0 0 24 24" width="16" height="16" fill="#666"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
-      <span class="breadcrumb" style="font-size: 11px;">
-        <a href="#" class="item-link" @click.prevent="goBack" style="font-weight: bold; color: blue;">INSPECTION RECORDS</a> 
-        > <span style="font-weight: normal; color: #333;">{{ isCreating ? 'Create New' : localRecord.product }}</span>
+      <span class="breadcrumb" style="font-size: 14px;">
+        <a href="#" class="item-link" @click.prevent="goBack" style="font-weight: bold; color: #0000EE; text-decoration: underline;">INSPECTION RECORDS</a> 
+        &gt; <span style="font-weight: normal; color: #333;">{{ isCreating ? 'Create New' : localRecord.product }}</span>
       </span>
     </div>
 
@@ -202,32 +238,16 @@ onUnmounted(() => {
         <table border="0" style="width: 100%; table-layout: fixed;">
           <tbody>
             <tr>
-              <td class="labelBack" style="width: 20%; height: 20px;">
-                <span class="labelTitle">Creation Date</span>
-              </td>
-              <td style="width: 30%; height: 21px;">
-                <div class="field-value">{{ localRecord.creationDate || '16-March-2026 12:58:05 PM' }}</div>
-              </td>
-              <td class="labelBack" style="width: 20%; height: 20px;">
-                <span class="labelTitle">Created By</span>
-              </td>
-              <td style="width: 30%; height: 21px;">
-                <div class="field-value">{{ localRecord.createdBy || 'qa-admin-p2' }}</div>
-              </td>
+              <td class="labelBack" style="width: 20%; height: 20px;"><span class="labelTitle">Creation Date</span></td>
+              <td style="width: 30%;"><div class="field-value">{{ localRecord.creationDate || '16-March-2026 12:58:05 PM' }}</div></td>
+              <td class="labelBack" style="width: 20%; height: 20px;"><span class="labelTitle">Created By</span></td>
+              <td style="width: 30%;"><div class="field-value">{{ localRecord.createdBy || 'qa-admin-p2' }}</div></td>
             </tr>
             <tr>
-              <td class="labelBack" style="width: 20%; height: 20px;">
-                <span class="labelTitle">Updated Date</span>
-              </td>
-              <td style="width: 30%; height: 21px;">
-                <div class="field-value">{{ localRecord.updatedDate || '16-March-2026 12:59:47 PM' }}</div>
-              </td>
-              <td class="labelBack" style="width: 20%; height: 20px;">
-                <span class="labelTitle">Updated By</span>
-              </td>
-              <td style="width: 30%; height: 21px;">
-                <div class="field-value">{{ localRecord.updatedBy || 'qa-tech-p2' }}</div>
-              </td>
+              <td class="labelBack" style="width: 20%; height: 20px;"><span class="labelTitle">Updated Date</span></td>
+              <td><div class="field-value">{{ localRecord.updatedDate || '16-March-2026 12:59:47 PM' }}</div></td>
+              <td class="labelBack" style="width: 20%; height: 20px;"><span class="labelTitle">Updated By</span></td>
+              <td><div class="field-value">{{ localRecord.updatedBy || 'qa-tech-p2' }}</div></td>
             </tr>
           </tbody>
         </table>
@@ -235,7 +255,7 @@ onUnmounted(() => {
     </div>
   </div>
 
-  <!-- Product Dimension List Section (Moved OUTSIDE the main box) -->
+  <!-- Sub-panel 1: Product Dimension List -->
   <div v-if="!isCreating" class="sub-panel-wrapper">
     <div class="sub-panel-header" @click="toggleDimensionList">
       <span class="sub-panel-icon-btn">
@@ -245,7 +265,7 @@ onUnmounted(() => {
         </svg>
         <svg style="vertical-align: middle;" viewBox="0 0 24 24" width="14" height="14" fill="#666"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
       </span>
-      <span style="font-weight: bold; font-size: 11px; text-transform: uppercase;">Product Dimension List</span>
+      <span style="font-weight: bold; font-size: 14px; text-transform: uppercase;">Product Dimension List</span>
     </div>
     
     <div v-if="isDimensionListOpen" class="sub-panel-body">
@@ -331,6 +351,104 @@ onUnmounted(() => {
       </div>
     </div>
   </div>
+
+  <!-- Sub-panel 2: Inspected Dimension List -->
+  <div v-if="!isCreating" class="sub-panel-wrapper">
+    <div class="sub-panel-header" @click="toggleInspectedDimensionList">
+      <span class="sub-panel-icon-btn">
+        <svg style="vertical-align: middle; margin-right: 5px;" viewBox="0 0 24 24" width="14" height="14" fill="#333">
+          <path v-if="!isInspectedDimensionListOpen" d="M10 17l5-5-5-5v10z"/>
+          <path v-else d="M7 10l5 5 5-5H7z"/>
+        </svg>
+        <svg style="vertical-align: middle;" viewBox="0 0 24 24" width="14" height="14" fill="#666"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+      </span>
+      <span style="font-weight: bold; font-size: 14px; text-transform: uppercase;">Inspected Dimension List</span>
+    </div>
+
+    <div v-if="isInspectedDimensionListOpen" class="sub-panel-body">
+      <div class="sub-panel-inner-box">
+        <!-- Sub Action Row matching ProductView -->
+        <div class="sub-actions" style="padding: 5px 15px; border-bottom: 1px solid #ddd; background-color: #fff;">
+          <span class="text-link" @click="openAddModal">Add Dimension to be Inspected</span>
+        </div>
+
+        <div class="table-scroll-container">
+          <table class="data-table dim-table">
+            <thead>
+              <tr>
+                <th class="col-icon"></th>
+                <th>Item No</th>
+                <th>Name</th>
+                <th>Equipment Name</th>
+                <th>Equipment Serial Number</th>
+                <th>Min Spec</th>
+                <th>Max Spec</th>
+                <th>Sampling Size</th>
+                <th>How many tests per sample</th>
+                <th>Farthest Test Results</th>
+                <th>Max Test Results</th>
+                <th>Summary - Max Test Results</th>
+                <th>Summary - Min Test Results</th>
+                <th>Summary - Average</th>
+                <th>Standard Deviation</th>
+                <th>Cp</th>
+                <th>Cpk</th>
+                <th>Rank</th>
+                <th>Judgement</th>
+                <th>Created By</th>
+                <th>Created TS</th>
+                <th>Updated By</th>
+                <th>Updated TS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(id, idx) in inspectedDimensions" :key="idx">
+                <td class="col-icon">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="#666" style="cursor: pointer;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                </td>
+                <td>{{ id.itemNo }}</td>
+                <td>{{ id.name }}</td>
+                <td>{{ id.eqName }}</td>
+                <td>{{ id.eqSerial }}</td>
+                <td>{{ id.minSpec }}</td>
+                <td>{{ id.maxSpec }}</td>
+                <td>{{ id.sampSize }}</td>
+                <td>{{ id.testsPerSamp }}</td>
+                <td>{{ id.farthestResult }}</td>
+                <td>{{ id.maxResult }}</td>
+                <td>{{ id.sumMax }}</td>
+                <td>{{ id.sumMin }}</td>
+                <td>{{ id.sumAvg }}</td>
+                <td>{{ id.stdDev }}</td>
+                <td>{{ id.cp }}</td>
+                <td>{{ id.cpk }}</td>
+                <td>{{ id.rank }}</td>
+                <td>{{ id.judgement }}</td>
+                <td>{{ id.createdBy }}</td>
+                <td>{{ id.createdTs }}</td>
+                <td>{{ id.updatedBy }}</td>
+                <td>{{ id.updatedTs }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination / Status Bar -->
+        <div class="pagination-bar">
+          <div class="page-controls">
+            <span class="p-btn"><svg viewBox="0 0 24 24" width="14" height="14" fill="#333"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></span>
+            <span class="p-btn"><svg viewBox="0 0 24 24" width="14" height="14" fill="#333"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></span>
+            <span class="p-btn"><svg viewBox="0 0 24 24" width="14" height="14" fill="#333"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg></span>
+            <span class="page-text" style="font-size: 11px;">Page <input type="text" value="1" class="page-input" /> of 1</span>
+            <span class="p-btn"><svg viewBox="0 0 24 24" width="14" height="14" fill="#333"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg></span>
+            <span class="p-btn"><svg viewBox="0 0 24 24" width="14" height="14" fill="#333"><path d="M16 6v12h2V6zM6 18l8.5-6L6 6z"/></svg></span>
+            <span class="p-btn"><svg viewBox="0 0 24 24" width="14" height="14" fill="#333"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></span>
+            <span class="display-text" style="font-size: 11px; margin-left: 10px;">Displaying 1 to {{ inspectedDimensions.length }} of {{ inspectedDimensions.length }} items</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -382,9 +500,20 @@ onUnmounted(() => {
 }
 .labelTitle { font-size: 13px; color: black; font-family: Arial, Helvetica, sans-serif; }
 .field-value { padding-left: 12px; font-size: 13px; color: #333; }
-.edit-select { width: 100%; padding: 4px; border: 1px solid #ccc; font-size: 13px; box-sizing: border-box; }
-.item-link { color: blue; text-decoration: none; font-weight: bold; }
+.edit-select { width: 80%; padding: 4px; border: 1px solid #ccc; font-size: 13px; box-sizing: border-box; }
+.item-link { color: #0000EE; text-decoration: none; font-weight: bold; }
 .item-link:hover { text-decoration: underline; }
+
+.text-link {
+  font-size: 13px;
+  color: #000;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.text-link:hover {
+  color: #8A0F12;
+}
 
 /* Sub-panel styling (Product style) */
 .sub-panel-wrapper { margin: 0 15px 15px 15px; }
