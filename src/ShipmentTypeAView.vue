@@ -8,20 +8,22 @@ const props = defineProps({
 const emit = defineEmits(['open-detail', 'open-create'])
 
 const searchQuery = ref('')
-const selectedFilter = ref('code')
+const selectedFilter = ref('reportId')
 const selectAll = ref(false)
 
 const filterOptions = [
-  { label: 'Product ID/Code', value: 'code' },
-  { label: 'Product Type', value: 'type' }
+  { label: 'Report ID', value: 'reportId' },
+  { label: 'Customer', value: 'customer' },
+  { label: 'Our Code No', value: 'codeNo' }
 ]
 
 const filteredRecords = computed(() => {
   if (!searchQuery.value) return props.records
   const q = searchQuery.value.toLowerCase()
   return props.records.filter(r => {
-    if (selectedFilter.value === 'code') return r.code?.toLowerCase().includes(q)
-    if (selectedFilter.value === 'type') return r.type?.toLowerCase().includes(q)
+    if (selectedFilter.value === 'reportId') return r.reportId?.toLowerCase().includes(q)
+    if (selectedFilter.value === 'customer') return r.customer?.toLowerCase().includes(q)
+    if (selectedFilter.value === 'codeNo') return r.codeNo?.toLowerCase().includes(q)
     return false
   })
 })
@@ -42,14 +44,15 @@ const openCreate = () => {
 </script>
 
 <template>
-  <div class="top-record-box custom-magnetic-view">
+  <div class="top-record-box custom-shipment-a-view">
     <div class="sub-header box-header">
       <svg class="folder-svg" viewBox="0 0 24 24" width="16" height="16" fill="#666"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
-      <span style="font-size: 14px; font-weight: bold; color: #333; text-transform: uppercase;">MAGNETIC PROPERTIES RECORDS</span>
+      <span style="font-size: 14px; font-weight: bold; color: #333; text-transform: uppercase;">SHIPMENT TYPE A REPORTS</span>
     </div>
 
     <div class="box-panel list-panel">
       <div class="list-inner-box">
+        <!-- Action Toolbar -->
         <div class="action-row toolbar-row">
           <div class="action-bar no-margin">
             <div class="dropdown-container">
@@ -60,6 +63,7 @@ const openCreate = () => {
           </div>
         </div>
 
+        <!-- Search Toolbar -->
         <div class="search-row toolbar-row">
           <div class="search-bar no-margin">
             <select class="search-select" v-model="selectedFilter">
@@ -70,20 +74,24 @@ const openCreate = () => {
           </div>
         </div>
 
+        <!-- Data Table -->
         <div class="table-area" style="overflow-x: auto;">
           <table class="data-table">
             <thead>
               <tr>
                 <th class="col-checkbox"><input type="checkbox" v-model="selectAll" @change="toggleSelectAll" /></th>
                 <th class="col-icon"></th>
-                <th>Product ID/Code</th>
-                <th>Product Type</th>
+                <th>Report ID</th>
+                <th>Issued Date</th>
+                <th>Customer</th>
+                <th>Our Code No</th>
+                <th>Judgement</th>
               </tr>
             </thead>
             <tbody>
               <tr 
                 v-for="record in filteredRecords" 
-                :key="record.id" 
+                :key="record.reportId" 
                 :class="{ 'selected-row': record.selected }"
               >
                 <td class="col-checkbox"><input type="checkbox" v-model="record.selected" /></td>
@@ -92,16 +100,20 @@ const openCreate = () => {
                     <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                   </svg>
                 </td>
-                <td><a href="#" class="item-link" @click.prevent="openDetail(record)">{{ record.code }}</a></td>
-                <td>{{ record.type }}</td>
+                <td><a href="#" class="item-link" @click.prevent="openDetail(record)">{{ record.reportId }}</a></td>
+                <td>{{ record.issuedDate }}</td>
+                <td>{{ record.customer }}</td>
+                <td>{{ record.codeNo }}</td>
+                <td>{{ record.judgement }}</td>
               </tr>
               <tr v-if="filteredRecords.length === 0">
-                <td colspan="4" style="text-align: center; padding: 20px; color: #666;">No records found.</td>
+                <td colspan="7" style="text-align: center; padding: 20px; color: #666;">No reports found.</td>
               </tr>
             </tbody>
           </table>
         </div>
 
+        <!-- Pagination -->
         <div class="pagination-bar">
           <div class="page-controls">
             <span class="p-btn"><svg viewBox="0 0 24 24" width="14" height="14" fill="#333"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></span>
@@ -126,71 +138,16 @@ const openCreate = () => {
   margin-bottom: 20px;
 }
 
-.list-panel {
-  padding: 15px;
-  border: none;
-}
-
-.list-inner-box {
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 2px;
-}
-
-.toolbar-row {
-  padding: 8px 15px;
-  border-bottom: 1px solid #ddd;
-}
-
-.action-row {
-  background-color: #f7f7f7;
-}
-
-.search-row {
-  background-color: #ffffff;
-}
-
-.action-link:hover {
-  color: #8f3235;
-  text-decoration: none;
-}
-
-.selected-row td {
-  background-color: #f2dfe1 !important;
-}
-
-.pagination-bar {
-  background-color: #f7f7f7;
-  border-top: 1px solid #ddd;
-  padding: 4px 10px;
-}
-
-.page-controls {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 11px;
-}
-
-.p-btn {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-
-.page-input {
-  width: 35px;
-  height: 18px;
-  border: 1px solid #ccc;
-  text-align: center;
-  font-size: 11px;
-}
-
-.item-link {
-  color: #0000EE;
-  text-decoration: none;
-}
-.item-link:hover {
-  text-decoration: underline;
-}
+.list-panel { padding: 15px; border: none; }
+.list-inner-box { background-color: #fff; border: 1px solid #ccc; border-radius: 2px; }
+.toolbar-row { padding: 8px 15px; border-bottom: 1px solid #ddd; }
+.action-row { background-color: #f7f7f7; }
+.search-row { background-color: #ffffff; }
+.selected-row td { background-color: #f2dfe1 !important; }
+.pagination-bar { background-color: #f7f7f7; border-top: 1px solid #ddd; padding: 4px 10px; }
+.page-controls { display: flex; align-items: center; gap: 8px; font-size: 11px; }
+.p-btn { display: flex; align-items: center; cursor: pointer; }
+.page-input { width: 35px; height: 18px; border: 1px solid #ccc; text-align: center; font-size: 11px; }
+.item-link { color: #0000EE; text-decoration: none; }
+.item-link:hover { text-decoration: underline; }
 </style>

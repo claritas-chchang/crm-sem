@@ -8,6 +8,8 @@ import ErasureView from './ErasureView.vue'
 import ErasureDetailView from './ErasureDetailView.vue'
 import MagneticPropertiesView from './MagneticPropertiesView.vue'
 import MagneticPropertiesDetailView from './MagneticPropertiesDetailView.vue'
+import ShipmentTypeAView from './ShipmentTypeAView.vue'
+import ShipmentTypeADetailView from './ShipmentTypeADetailView.vue'
 
 const currentModule = ref('product')
 
@@ -156,6 +158,50 @@ const handleSaveMagProp = (record) => {
   }
   currentView.value = 'list'
 }
+
+// SHIPMENT TYPE A MODULE STATE
+const shipmentARecords = ref([
+  { 
+    reportId: 'REP-A-001', 
+    issuedDate: '2026-03-30', 
+    customer: 'TOYOTA MOTOR', 
+    material: 'Neodymium', 
+    codeNo: 'N52-A1', 
+    customerPo: 'PO-TYT-9988', 
+    customerDwg: 'DWG-9988-X', 
+    ourPo: 'OUR-PO-001', 
+    quantity: '500 PCS', 
+    unitWeight: '12.5g', 
+    magThrough: '3.0mm', 
+    magnetization: 'MAGNETIZED', 
+    marking: 'Yes', 
+    dimension: '10x10x5mm', 
+    notes: 'Sample check pass', 
+    judgement: 'Pass', 
+    approvedBy: 'Mr. Tanaka', 
+    checkedBy: 'Mr. Sato', 
+    selected: false 
+  }
+])
+const selectedShipmentARecord = ref(null)
+
+const handleOpenShipmentADetail = (record) => {
+  selectedShipmentARecord.value = record
+  currentView.value = 'view'
+}
+const handleOpenShipmentACreate = () => {
+  selectedShipmentARecord.value = { reportId: '', magnetization: 'MAGNETIZED', marking: 'Yes' }
+  currentView.value = 'create'
+}
+const handleSaveShipmentA = (record) => {
+  const idx = shipmentARecords.value.findIndex(r => r.reportId === record.reportId)
+  if (idx !== -1) {
+    shipmentARecords.value[idx] = record
+  } else {
+    shipmentARecords.value.push({ ...record, selected: false })
+  }
+  currentView.value = 'list'
+}
 </script>
 
 <template>
@@ -186,7 +232,7 @@ const handleSaveMagProp = (record) => {
       <div class="nav-item-dropdown">
         <a href="#">REPORT</a>
         <div class="dropdown-content">
-          <a href="#" class="dropdown-item">Shipment Type A</a>
+          <a href="#" class="dropdown-item" @click.prevent="currentModule = 'shipmentA'; currentView = 'list'">Shipment Type A</a>
           <a href="#" class="dropdown-item">Shipment Type B</a>
         </div>
       </div>
@@ -214,6 +260,12 @@ const handleSaveMagProp = (record) => {
       <template v-else-if="currentModule === 'magProp'">
         <MagneticPropertiesView v-if="currentView === 'list'" :records="magPropRecords" @open-create="handleOpenMagPropCreate" @open-detail="handleOpenMagPropDetail" />
         <MagneticPropertiesDetailView v-else :record="selectedMagPropRecord" :isCreating="currentView === 'create'" @back="backToList" @save="handleSaveMagProp" />
+      </template>
+
+      <!-- SHIPMENT TYPE A MODULE -->
+      <template v-else-if="currentModule === 'shipmentA'">
+        <ShipmentTypeAView v-if="currentView === 'list'" :records="shipmentARecords" @open-create="handleOpenShipmentACreate" @open-detail="handleOpenShipmentADetail" />
+        <ShipmentTypeADetailView v-else :record="selectedShipmentARecord" :isCreating="currentView === 'create'" @back="backToList" @save="handleSaveShipmentA" />
       </template>
 
       <!-- PRODUCT RECORDS MODULE -->

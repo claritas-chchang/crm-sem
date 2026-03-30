@@ -395,7 +395,9 @@ body {
   background-color: #ffffff;
 }
 
-
+.no-margin {
+  margin-bottom: 0 !important;
+}
 
 .action-link {
   color: var(--text-main);
