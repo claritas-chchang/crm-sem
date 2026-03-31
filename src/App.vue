@@ -12,6 +12,8 @@ import ShipmentTypeAView from './ShipmentTypeAView.vue'
 import ShipmentTypeADetailView from './ShipmentTypeADetailView.vue'
 import ShipmentTypeBView from './ShipmentTypeBView.vue'
 import ShipmentTypeBDetailView from './ShipmentTypeBDetailView.vue'
+import ReliabilityView from './ReliabilityView.vue'
+import ReliabilityDetailView from './ReliabilityDetailView.vue'
 
 const currentModule = ref('product')
 
@@ -247,6 +249,41 @@ const handleSaveShipmentB = (record) => {
   }
   currentView.value = 'list'
 }
+
+// RELIABILITY MODULE STATE
+const reliabilityRecords = ref([
+  { 
+    id: 'REL-0001',
+    testType: 'Pressure Cooker',
+    testCondition: '120ºc x 2atm x 48hrs',
+    samplingFrequency: '5 pcs / line / day / any model',
+    criteria: 'No harmful change such as worsened stain, corrosion, rust, or swelling before and after the test',
+    platingDate: '2026-03-31',
+    preparedBy: 'Admin',
+    checkedBy: 'Manager',
+    approvedBy: 'Director',
+    selected: false
+  }
+])
+const selectedReliabilityRecord = ref(null)
+
+const handleOpenReliabilityDetail = (record) => {
+  selectedReliabilityRecord.value = record
+  currentView.value = 'view'
+}
+const handleOpenReliabilityCreate = () => {
+  selectedReliabilityRecord.value = { id: '', testType: 'Pressure Cooker' }
+  currentView.value = 'create'
+}
+const handleSaveReliability = (record) => {
+  const idx = reliabilityRecords.value.findIndex(r => r.id === record.id)
+  if (idx !== -1) {
+    reliabilityRecords.value[idx] = record
+  } else {
+    reliabilityRecords.value.push({ ...record, selected: false })
+  }
+  currentView.value = 'list'
+}
 </script>
 
 <template>
@@ -271,7 +308,7 @@ const handleSaveShipmentB = (record) => {
       <a href="#" :class="{ active: currentModule === 'validation' }" @click.prevent="currentModule = 'validation'; currentView = 'list'">VALIDATION</a>
       <a href="#" :class="{ active: currentModule === 'inspection' }" @click.prevent="currentModule = 'inspection'; currentView = 'list'">INSPECTION</a>
       <a href="#" :class="{ active: currentModule === 'erasure' }" @click.prevent="currentModule = 'erasure'; currentView = 'list'">ERASURE</a>
-      <a href="#">RELIABILITY</a>
+      <a href="#" :class="{ active: currentModule === 'reliability' }" @click.prevent="currentModule = 'reliability'; currentView = 'list'">RELIABILITY</a>
       <a href="#" :class="{ active: currentModule === 'samplingLevel' }" @click.prevent="currentModule = 'samplingLevel'; currentView = 'list'">SAMPLING LEVEL</a>
       <a href="#" :class="{ active: currentModule === 'product' }" @click.prevent="currentModule = 'product'; currentView = 'list'">PRODUCT RECORDS</a>
       <div class="nav-item-dropdown">
@@ -299,6 +336,12 @@ const handleSaveShipmentB = (record) => {
       <template v-else-if="currentModule === 'erasure'">
         <ErasureView v-if="currentView === 'list'" :records="erasureRecords" @open-create="handleOpenErasureCreate" @open-detail="handleOpenErasureDetail" />
         <ErasureDetailView v-else :record="selectedErasureRecord" :isCreating="currentView === 'create'" @back="backToList" @save="handleSaveErasure" />
+      </template>
+
+      <!-- RELIABILITY MODULE -->
+      <template v-else-if="currentModule === 'reliability'">
+        <ReliabilityView v-if="currentView === 'list'" :records="reliabilityRecords" @open-create="handleOpenReliabilityCreate" @open-detail="handleOpenReliabilityDetail" />
+        <ReliabilityDetailView v-else :record="selectedReliabilityRecord" :isCreating="currentView === 'create'" @back="backToList" @save="handleSaveReliability" />
       </template>
 
       <!-- MAGNETIC PROPERTIES MODULE -->
