@@ -31,59 +31,174 @@ const cancelEdit = () => {
 const printRecord = () => {
   // Build printable HTML content
   const html = `
+    <!DOCTYPE html>
     <html>
     <head>
       <title>Shipment Type A Report</title>
       <style>
-        body { font-family: Arial, Helvetica, sans-serif; margin: 20px; }
-        h1 { text-align: center; font-size: 24px; margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; font-size: 12px; }
-        th { background-color: #f2f2f2; }
-        .section { margin-bottom: 30px; }
-        .section-title { font-size: 18px; margin-bottom: 10px; border-bottom: 2px solid #333; }
+        @page { size: A4 portrait; margin: 10mm; }
+        * { box-sizing: border-box; }
+        body { font-family: Arial, Helvetica, sans-serif; margin: 0; padding: 0; font-size: 11px; color: #000; background-color: #fff; }
+        .page-container { width: 210mm; min-height: 297mm; margin: 0 auto; padding: 10mm; background-color: #fff; }
+        @media screen {
+          body { background-color: #525659; display: flex; justify-content: center; padding: 20px 0; }
+          .page-container { box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+        }
+        @media print {
+          body { background-color: transparent; padding: 0; display: block; }
+          .page-container { width: 100%; min-height: auto; margin: 0; padding: 0; box-shadow: none; }
+        }
+        .header-table { width: 100%; margin-bottom: 20px; border: none; }
+        .header-table td { border: none; padding: 0; vertical-align: bottom; }
+        .company-logo { display: flex; align-items: center; margin-left: 20px; }
+        .company-logo span.shin { color: #004b87; font-size: 64px; font-weight: 900; font-family: 'Arial Black', Impact, sans-serif; letter-spacing: -2px; font-style: italic; }
+        .company-logo span.etsu { color: #009988; font-size: 64px; font-weight: 900; font-family: 'Arial Black', Impact, sans-serif; letter-spacing: -2px; font-style: italic; }
+        .company-details { text-align: left; color: #0000ff; font-weight: bold; font-size: 13px; line-height: 1.3; padding-bottom: 15px; padding-left: 40px; }
+        h1 { text-align: center; font-size: 20px; margin: 10px 0; padding: 0; font-weight: bold; }
+        .title-divider { border-top: 1px solid #000; border-bottom: 2px solid #000; height: 1px; margin-bottom: 15px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        th, td { border: 1px solid #000; padding: 5px 8px; font-size: 11px; text-align: left; }
+        th { font-weight: bold; background-color: transparent; }
+        .text-center { text-align: center !important; }
+        .font-bold { font-weight: bold; }
+        .mt-20 { margin-top: 20px; }
+        .underline-title { font-weight: bold; text-decoration: underline; background-color: transparent; border-bottom: 1px solid #000; }
       </style>
     </head>
     <body>
-      <h1>Shipment Type A Report</h1>
-      <div class="section">
-        <div class="section-title">Report Information</div>
-        <table>
-          <tr><th>Report ID</th><td>${localRecord.value.reportId || ''}</td><th>Issued Date</th><td>${localRecord.value.issuedDate || ''}</td></tr>
-          <tr><th>Customer</th><td>${localRecord.value.customer || ''}</td><th>Material</th><td>${localRecord.value.material || ''}</td></tr>
-          <tr><th>Our Code No</th><td>${localRecord.value.codeNo || ''}</td><th>Customer's P/O No</th><td>${localRecord.value.customerPo || ''}</td></tr>
-          <tr><th>Customer's Dwg / Part No</th><td>${localRecord.value.customerDwg || ''}</td><th>Our P/O No</th><td>${localRecord.value.ourPo || ''}</td></tr>
-          <tr><th>Quantity</th><td>${localRecord.value.quantity || ''}</td><th>Unit Weight</th><td>${localRecord.value.unitWeight || ''}</td></tr>
-          <tr><th>Magnetization Through</th><td>${localRecord.value.magThrough || ''}</td><th>Magnetization</th><td>${localRecord.value.magnetization || ''}</td></tr>
-          <tr><th>Marking</th><td>${localRecord.value.marking || ''}</td><th>Dimension</th><td>${localRecord.value.dimension || ''}</td></tr>
+      <div class="page-container">
+        <table class="header-table">
+          <tr>
+            <td style="width: 50%;">
+              <div class="company-logo">
+                <span class="shin">Shin</span><span class="etsu">Etsu</span>
+              </div>
+            </td>
+            <td style="width: 50%;">
+              <div class="company-details">
+                SHIN-ETSU (MALAYSIA) SDN BHD (Plant 1)<br/>
+                Lot 50, Jalan Serendah 26/17<br/>
+                HICOM Industrial Estate<br/>
+                40400 Shah Alam<br/>
+                Selangor Darul Ehsan
+              </div>
+            </td>
+          </tr>
         </table>
-      </div>
-      <div class="section">
-        <div class="section-title">Magnetic Properties</div>
+        
+        <h1>Shipment Type A Report</h1>
+        <div class="title-divider"></div>
+
         <table>
-          <tr><th>Name</th><th>AVG</th></tr>
-          ${magProps.value.map(row => `<tr><td>${row.name}</td><td>${row.avg}</td></tr>`).join('')}
+          <tr>
+            <th style="width: 25%;">Report ID :</th>
+            <td style="width: 25%;">${localRecord.value.reportId || ''}</td>
+            <th style="width: 25%;">Issued Date :</th>
+            <td style="width: 25%;">${localRecord.value.issuedDate || ''}</td>
+          </tr>
+          <tr>
+            <th>Customer :</th>
+            <td colspan="3">${localRecord.value.customer || ''}</td>
+          </tr>
+          <tr>
+            <th>Material :</th>
+            <td>${localRecord.value.material || ''}</td>
+            <th>Our Code No :</th>
+            <td>${localRecord.value.codeNo || ''}</td>
+          </tr>
+          <tr>
+            <th>Customer's P/O No :</th>
+            <td>${localRecord.value.customerPo || ''}</td>
+            <th>Our P/O No :</th>
+            <td>${localRecord.value.ourPo || ''}</td>
+          </tr>
+          <tr>
+            <th>Customer's Dwg / Part No :</th>
+            <td colspan="3">${localRecord.value.customerDwg || ''}</td>
+          </tr>
+          <tr>
+            <th>Quantity :</th>
+            <td>${localRecord.value.quantity || ''}</td>
+            <th>Unit Weight :</th>
+            <td>${localRecord.value.unitWeight || ''}</td>
+          </tr>
+          <tr>
+            <th>Magnetization Through :</th>
+            <td>${localRecord.value.magThrough || ''}</td>
+            <th>Magnetization :</th>
+            <td>${localRecord.value.magnetization || ''}</td>
+          </tr>
+          <tr>
+            <th>Marking :</th>
+            <td>${localRecord.value.marking || ''}</td>
+            <th>Dimension :</th>
+            <td>${localRecord.value.dimension || ''}</td>
+          </tr>
+          <tr>
+            <th>Judgement :</th>
+            <td>${localRecord.value.judgement || ''}</td>
+            <th>Notes :</th>
+            <td>${localRecord.value.notes || ''}</td>
+          </tr>
+
+          <tr><td colspan="4" style="border-left: none; border-right: none; height: 10px; background: transparent;"></td></tr>
+
+          <tr><td colspan="4" class="underline-title">Magnetic Properties :</td></tr>
+          <tr>
+            <th colspan="2" class="text-center font-bold">Name</th>
+            <th colspan="2" class="text-center font-bold">AVG</th>
+          </tr>
+          ${magProps.value.map(row => `<tr><td colspan="2" class="text-center">${row.name}</td><td colspan="2" class="text-center">${row.avg}</td></tr>`).join('')}
+
+          <tr><td colspan="4" style="border-left: none; border-right: none; height: 10px; background: transparent;"></td></tr>
+
+          <tr><td colspan="4" class="underline-title">Product Magnetic Properties :</td></tr>
+          <tr>
+            <th class="text-center font-bold">Name</th>
+            <th class="text-center font-bold">AVG</th>
+            <th class="text-center font-bold">MIN</th>
+            <th class="text-center font-bold">MAX</th>
+          </tr>
+          ${prodMagProps.value.map(row => `<tr><td class="text-center">${row.name}</td><td class="text-center">${row.avg}</td><td class="text-center">${row.min}</td><td class="text-center">${row.max}</td></tr>`).join('')}
+
+          <tr><td colspan="4" style="border-left: none; border-right: none; height: 10px; background: transparent;"></td></tr>
+
+          <tr><td colspan="4" class="underline-title">Additional Specification :</td></tr>
+          <tr>
+            <th class="text-center font-bold">Item</th>
+            <th class="text-center font-bold">Judgment</th>
+            <th class="text-center font-bold">Instrument</th>
+            <th class="text-center font-bold">The Symbol for Instrument</th>
+          </tr>
+          ${addSpecs.value.map(row => `<tr><td class="text-center">${row.item}</td><td class="text-center">${row.judgment}</td><td class="text-center">${row.instrument}</td><td class="text-center">${row.symbol}</td></tr>`).join('')}
         </table>
-      </div>
-      <div class="section">
-        <div class="section-title">Product Magnetic Properties</div>
-        <table>
-          <tr><th>Name</th><th>AVG</th><th>MIN</th><th>MAX</th></tr>
-          ${prodMagProps.value.map(row => `<tr><td>${row.name}</td><td>${row.avg}</td><td>${row.min}</td><td>${row.max}</td></tr>`).join('')}
-        </table>
-      </div>
-      <div class="section">
-        <div class="section-title">Additional Specification</div>
-        <table>
-          <tr><th>Item</th><th>Judgment</th><th>Instrument</th><th>The Symbol for Instrument</th></tr>
-          ${addSpecs.value.map(row => `<tr><td>${row.item}</td><td>${row.judgment}</td><td>${row.instrument}</td><td>${row.symbol}</td></tr>`).join('')}
-        </table>
-      </div>
-      <div class="section">
-        <div class="section-title">System Information</div>
-        <table>
-          <tr><th>Created Date</th><td>${localRecord.value.createdTs || ''}</td><th>Created By</th><td>${localRecord.value.createdBy || ''}</td></tr>
-          <tr><th>Updated Date</th><td>${localRecord.value.updatedTs || ''}</td><th>Updated By</th><td>${localRecord.value.updatedBy || ''}</td></tr>
+
+        <!-- Signatures Footer -->
+        <table class="mt-20">
+          <tr>
+            <th class="text-center" style="padding-bottom: 5px; width: 25%; text-decoration: underline;">Prepared By :</th>
+            <th class="text-center" style="padding-bottom: 5px; width: 25%; text-decoration: underline;">Checked By :</th>
+            <th class="text-center" style="padding-bottom: 5px; width: 25%; text-decoration: underline;">Approved By :</th>
+            <th style="width: 25%;"></th>
+          </tr>
+          <tr>
+            <td class="text-center" style="padding: 25px 0 5px 0;">${localRecord.value.createdBy || ''}</td>
+            <td class="text-center" style="padding: 25px 0 5px 0;">${localRecord.value.checkedBy || ''}</td>
+            <td class="text-center" style="padding: 25px 0 5px 0;">${localRecord.value.approvedBy || ''}</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td style="padding: 0;">
+              <table style="margin: 0; border: none; width: 100%;"><tr><td style="border: none; border-right: 1px solid #000; width: 30%; text-align: center;">Date:</td><td style="border: none; width: 70%; text-align: center;">${localRecord.value.createdTs ? localRecord.value.createdTs.split(' ')[0] : ''}</td></tr></table>
+            </td>
+            <td style="padding: 0;">
+              <table style="margin: 0; border: none; width: 100%;"><tr><td style="border: none; border-right: 1px solid #000; width: 30%; text-align: center;">Date:</td><td style="border: none; width: 70%; text-align: center;">${localRecord.value.updatedTs ? localRecord.value.updatedTs.split(' ')[0] : ''}</td></tr></table>
+            </td>
+            <td style="padding: 0;">
+              <table style="margin: 0; border: none; width: 100%;"><tr><td style="border: none; border-right: 1px solid #000; width: 30%; text-align: center;">Date:</td><td style="border: none; width: 70%; text-align: center;">${localRecord.value.updatedTs ? localRecord.value.updatedTs.split(' ')[0] : ''}</td></tr></table>
+            </td>
+            <td></td>
+          </tr>
         </table>
       </div>
     </body>
