@@ -28,12 +28,16 @@ const cancelEdit = () => {
   }
 }
 
+const goBack = () => {
+  emit('back')
+}
+
 const printRecord = () => {
   // Build printable HTML content
   const html = `
     <html>
     <head>
-      <title>Shipment Type A Report</title>
+      <title>Shipment Type B Report</title>
       <style>
         body { font-family: Arial, Helvetica, sans-serif; margin: 20px; }
         h1 { text-align: center; font-size: 24px; margin-bottom: 20px; }
@@ -45,7 +49,7 @@ const printRecord = () => {
       </style>
     </head>
     <body>
-      <h1>Shipment Type A Report</h1>
+      <h1>Shipment Type B Report</h1>
       <div class="section">
         <div class="section-title">Report Information</div>
         <table>
@@ -93,7 +97,6 @@ const printRecord = () => {
   printWindow.document.write(html);
   printWindow.document.close();
   printWindow.focus();
-  // Give the browser a moment to render before printing
   setTimeout(() => { printWindow.print(); }, 300);
 };
 
@@ -116,6 +119,7 @@ const addSpecs = ref(localRecord.value.addSpecs && localRecord.value.addSpecs.le
   { item: 'Length', judgment: 'NG', instrument: 'B', symbol: 'B : Flux meter' },
   { item: 'Weight', judgment: 'OK', instrument: 'C', symbol: 'C : Gauss meter' }
 ])
+
 const addAddSpec = () => { addSpecs.value.push({ item: '', judgment: '', instrument: '', symbol: '' }) }
 const removeAddSpec = (idx) => { addSpecs.value.splice(idx, 1) }
 
@@ -138,11 +142,6 @@ const symbolOpts = [
   'A : BH tracer','B : Flux meter','C : Gauss meter','D : Micrometer','E : Dial gauge','F : Caliper','G : Limit gauge','H : Special Inspection Jig','I : Projector','J : Measure scope','K : Comparator','L : Std. magnet','M : Pin gauge','N : Magnetic viewer','O : Naked Eyes','P : Plating Thickness Gauge','Q : Contracer','R : Weighing scale','S : Square, Thickness Gauge','T : Tape','U : Linear Gauge','V : Load Test Machine','W : X-Ray Machine','X : Paint Checker Machine','Y : Gloss Ratio Checker','Z : Image Processor','1 : Helmholts Coil','2 : PCT Machine','3 : Hall Element','4 : Magnetic Declination Check Fixture'
 ]
 
-const goBack = () => {
-  emit('back')
-}
-
-// Save override
 const saveRecord = () => {
   emit('save', {
     ...localRecord.value,
@@ -155,12 +154,12 @@ const saveRecord = () => {
 </script>
 
 <template>
-  <div class="top-record-box custom-shipment-a-detail">
+  <div class="top-record-box custom-shipment-b-detail">
     <!-- Breadcrumbs -->
     <div class="sub-header box-header">
       <svg class="folder-svg" viewBox="0 0 24 24" width="16" height="16" fill="#666"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
       <span class="breadcrumb" style="font-size: 14px;">
-        <a href="#" class="item-link" @click.prevent="goBack" style="color: #0000EE;">SHIPMENT TYPE A RECORDS</a> 
+        <a href="#" class="item-link" @click.prevent="goBack" style="color: #0000EE;">SHIPMENT TYPE B RECORDS</a> 
         &gt; <span class="current-page" style="font-weight: normal; color: #333;">{{ isCreating ? 'Create New' : (localRecord.reportId || 'New') }}</span>
       </span>
     </div>
@@ -181,7 +180,7 @@ const saveRecord = () => {
     <div class="form-wrapper">
       <!-- Report Header Information -->
       <fieldset class="fsMargin">
-        <legend><b>Report Information</b></legend>
+        <legend><b>Report Information (Type B)</b></legend>
         <table border="0" style="width: 100%; table-layout: fixed;">
           <tbody>
             <tr>
@@ -262,15 +261,15 @@ const saveRecord = () => {
           <tbody>
             <tr>
               <td class="labelBack" style="width: 20%;"><span class="labelTitle">Created Date</span></td>
-              <td style="width: 30%;"><div class="field-value">{{ localRecord.createdTs || '30-March-2026 09:25:05 AM' }}</div></td>
+              <td style="width: 30%;"><div class="field-value">{{ localRecord.createdTs || '30-March-2026 10:45:00 AM' }}</div></td>
               <td class="labelBack" style="width: 20%;"><span class="labelTitle">Created By</span></td>
               <td style="width: 30%;"><div class="field-value">{{ localRecord.createdBy || 'qa-admin' }}</div></td>
             </tr>
             <tr>
               <td class="labelBack"><span class="labelTitle">Updated Date</span></td>
-              <td><div class="field-value">{{ localRecord.updatedTs || '30-March-2026 10:15:30 AM' }}</div></td>
+              <td><div class="field-value">{{ localRecord.updatedTs || '-' }}</div></td>
               <td class="labelBack"><span class="labelTitle">Updated By</span></td>
-              <td><div class="field-value">{{ localRecord.updatedBy || 'qa-tech' }}</div></td>
+              <td><div class="field-value">{{ localRecord.updatedBy || '-' }}</div></td>
             </tr>
           </tbody>
         </table>
@@ -280,217 +279,163 @@ const saveRecord = () => {
 
   <!-- Magnetic Properties Sub-panel -->
   <div class="sub-panel-wrapper">
-      <div class="sub-panel-header">
-        <svg class="folder-svg" viewBox="0 0 24 24" width="16" height="16" fill="#666"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
-        <span style="font-size: 14px; font-weight: bold; color: #333; text-transform: uppercase;">Magnetic Properties</span>
-      </div>
-      <div class="sub-panel-body">
-        <div class="sub-panel-inner-box">
-          <div class="table-scroll-container">
-            <table class="dim-table" style="width: 100%; border-collapse: collapse;">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>AVG</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(row, idx) in magProps" :key="idx">
-                  <td>{{ row.name }}</td>
-                  <td>
-                    <span v-if="!isEditing">{{ row.avg }}</span>
-                    <input v-else type="text" v-model="row.avg" class="edit-select" style="width: 100%;" />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+    <div class="sub-panel-header">
+      <svg class="folder-svg" viewBox="0 0 24 24" width="16" height="16" fill="#666"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+      <span style="font-size: 14px; font-weight: bold; color: #333; text-transform: uppercase;">Magnetic Properties</span>
+    </div>
+    <div class="sub-panel-body">
+      <div class="sub-panel-inner-box">
+        <div class="table-scroll-container">
+          <table class="dim-table" style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>AVG</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(row, idx) in magProps" :key="idx">
+                <td>{{ row.name }}</td>
+                <td>
+                  <span v-if="!isEditing">{{ row.avg }}</span>
+                  <input v-else type="text" v-model="row.avg" class="edit-select" style="width: 100%;" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Product Magnetic Properties Sub-panel -->
-    <div class="sub-panel-wrapper">
-      <div class="sub-panel-header">
-        <svg class="folder-svg" viewBox="0 0 24 24" width="16" height="16" fill="#666"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
-        <span style="font-size: 14px; font-weight: bold; color: #333; text-transform: uppercase;">Product Magnetic Properties</span>
-      </div>
-      <div class="sub-panel-body">
-        <div class="sub-panel-inner-box">
-          <div class="table-scroll-container">
-            <table class="dim-table" style="width: 100%; border-collapse: collapse;">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>AVG</th>
-                  <th>MIN</th>
-                  <th>MAX</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(row, idx) in prodMagProps" :key="idx">
-                  <td>{{ row.name }}</td>
-                  <td>
-                    <span v-if="!isEditing">{{ row.avg }}</span>
-                    <input v-else type="text" v-model="row.avg" class="edit-select" style="width: 100%;" />
-                  </td>
-                  <td>
-                    <span v-if="!isEditing">{{ row.min }}</span>
-                    <input v-else type="text" v-model="row.min" class="edit-select" style="width: 100%;" />
-                  </td>
-                  <td>
-                    <span v-if="!isEditing">{{ row.max }}</span>
-                    <input v-else type="text" v-model="row.max" class="edit-select" style="width: 100%;" />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+  <!-- Product Magnetic Properties Sub-panel -->
+  <div class="sub-panel-wrapper">
+    <div class="sub-panel-header">
+      <svg class="folder-svg" viewBox="0 0 24 24" width="16" height="16" fill="#666"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+      <span style="font-size: 14px; font-weight: bold; color: #333; text-transform: uppercase;">Product Magnetic Properties</span>
+    </div>
+    <div class="sub-panel-body">
+      <div class="sub-panel-inner-box">
+        <div class="table-scroll-container">
+          <table class="dim-table" style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>AVG</th>
+                <th>MIN</th>
+                <th>MAX</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(row, idx) in prodMagProps" :key="idx">
+                <td>{{ row.name }}</td>
+                <td>
+                  <span v-if="!isEditing">{{ row.avg }}</span>
+                  <input v-else type="text" v-model="row.avg" class="edit-select" style="width: 100%;" />
+                </td>
+                <td>
+                  <span v-if="!isEditing">{{ row.min }}</span>
+                  <input v-else type="text" v-model="row.min" class="edit-select" style="width: 100%;" />
+                </td>
+                <td>
+                  <span v-if="!isEditing">{{ row.max }}</span>
+                  <input v-else type="text" v-model="row.max" class="edit-select" style="width: 100%;" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Additional Specification Sub-panel -->
-    <div class="sub-panel-wrapper">
-      <div class="sub-panel-header">
-        <svg class="folder-svg" viewBox="0 0 24 24" width="16" height="16" fill="#666"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
-        <span style="font-size: 14px; font-weight: bold; color: #333; text-transform: uppercase;">Additional Specification</span>
-      </div>
-      <div class="sub-panel-body">
-        <div class="sub-panel-inner-box">
-          
-          <div v-if="isEditing" class="action-row toolbar-row" style="border-bottom: 1px solid #ddd; padding: 6px 10px; background: #f7f7f7;">
-            <button class="btn btn-secondary" style="font-size: 11px; padding: 4px 10px;" @click.prevent="addAddSpec">Add Record</button>
-          </div>
-
-          <div class="table-scroll-container">
-            <table class="dim-table" style="width: 100%; border-collapse: collapse;">
-              <thead>
-                <tr>
-                  <th v-if="isEditing" style="width: 40px; text-align: center;">Action</th>
-                  <th>Item</th>
-                  <th>Judgment</th>
-                  <th>Instrument</th>
-                  <th>The Symbol for Instrument</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(row, idx) in addSpecs" :key="idx">
-                  <td v-if="isEditing" style="text-align: center;">
-                    <button class="btn btn-secondary" style="font-size: 10px; padding: 2px 6px;" @click.prevent="removeAddSpec(idx)">X</button>
-                  </td>
-                  <td>
-                    <span v-if="!isEditing">{{ row.item }}</span>
-                    <select v-else v-model="row.item" class="edit-select" style="width: 100%;">
-                      <option v-for="opt in itemOpts" :key="opt" :value="opt">{{ opt }}</option>
-                    </select>
-                  </td>
-                  <td>
-                    <span v-if="!isEditing">{{ row.judgment }}</span>
-                    <select v-else v-model="row.judgment" class="edit-select" style="width: 100%;">
-                      <option v-for="opt in judgmentOpts" :key="opt" :value="opt">{{ opt }}</option>
-                    </select>
-                  </td>
-                  <td>
-                    <span v-if="!isEditing">{{ row.instrument }}</span>
-                    <select v-else v-model="row.instrument" class="edit-select" style="width: 100%;">
-                      <option v-for="opt in instrumentOpts" :key="opt" :value="opt">{{ opt }}</option>
-                    </select>
-                  </td>
-                  <td>
-                    <span v-if="!isEditing">{{ row.symbol }}</span>
-                    <select v-else v-model="row.symbol" class="edit-select" style="width: 100%;">
-                      <option v-for="opt in symbolOpts" :key="opt" :value="opt">{{ opt }}</option>
-                    </select>
-                  </td>
-                </tr>
-                <tr v-if="addSpecs.length === 0">
-                  <td :colspan="isEditing ? 5 : 4" style="text-align: center; color: #999; padding: 15px;">No records added</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+  <!-- Additional Specification Sub-panel -->
+  <div class="sub-panel-wrapper">
+    <div class="sub-panel-header">
+      <svg class="folder-svg" viewBox="0 0 24 24" width="16" height="16" fill="#666"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+      <span style="font-size: 14px; font-weight: bold; color: #333; text-transform: uppercase;">Additional Specification</span>
+    </div>
+    <div class="sub-panel-body">
+      <div class="sub-panel-inner-box">
+        <div v-if="isEditing" class="action-row toolbar-row" style="border-bottom: 1px solid #ddd; padding: 6px 10px; background: #f7f7f7;">
+          <button class="btn btn-secondary" style="font-size: 11px; padding: 4px 10px;" @click.prevent="addAddSpec">Add Record</button>
+        </div>
+        <div class="table-scroll-container">
+          <table class="dim-table" style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr>
+                <th v-if="isEditing" style="width: 40px; text-align: center;">Action</th>
+                <th>Item</th>
+                <th>Judgment</th>
+                <th>Instrument</th>
+                <th>The Symbol for Instrument</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(row, idx) in addSpecs" :key="idx">
+                <td v-if="isEditing" style="text-align: center;">
+                  <button class="btn btn-secondary" style="font-size: 10px; padding: 2px 6px;" @click.prevent="removeAddSpec(idx)">X</button>
+                </td>
+                <td>
+                  <span v-if="!isEditing">{{ row.item }}</span>
+                  <select v-else v-model="row.item" class="edit-select" style="width: 100%;">
+                    <option v-for="opt in itemOpts" :key="opt" :value="opt">{{ opt }}</option>
+                  </select>
+                </td>
+                <td>
+                  <span v-if="!isEditing">{{ row.judgment }}</span>
+                  <select v-else v-model="row.judgment" class="edit-select" style="width: 100%;">
+                    <option v-for="opt in judgmentOpts" :key="opt" :value="opt">{{ opt }}</option>
+                  </select>
+                </td>
+                <td>
+                  <span v-if="!isEditing">{{ row.instrument }}</span>
+                  <select v-else v-model="row.instrument" class="edit-select" style="width: 100%;">
+                    <option v-for="opt in instrumentOpts" :key="opt" :value="opt">{{ opt }}</option>
+                  </select>
+                </td>
+                <td>
+                  <span v-if="!isEditing">{{ row.symbol }}</span>
+                  <select v-else v-model="row.symbol" class="edit-select" style="width: 100%;">
+                    <option v-for="opt in symbolOpts" :key="opt" :value="opt">{{ opt }}</option>
+                  </select>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
+  </div>
 </template>
 
 <style scoped>
-.top-record-box {
-  background-color: #fff;
-  border: 2px solid #c7c7c7;
-  margin: 15px;
-  overflow: hidden;
-}
+.top-record-box { background-color: #fff; border: 2px solid #c7c7c7; margin: 15px; overflow: hidden; }
 .breadcrumb { font-size: 14px; font-weight: bold; }
 .item-link { color: #0000EE; text-decoration: none; }
 .item-link:hover { text-decoration: underline; }
 .current-page { font-weight: normal; color: #333; }
-
-.top-actions {
-  display: flex;
-  gap: 10px;
-  padding: 10px 15px;
-  background-color: transparent;
-}
-.btn {
-  padding: 8px 18px;
-  font-size: 13px;
-  font-weight: bold;
-  border: none;
-  border-radius: 2px;
-  cursor: pointer;
-}
+.top-actions { display: flex; gap: 10px; padding: 10px 15px; background-color: transparent; }
+.btn { padding: 8px 18px; font-size: 13px; font-weight: bold; border: none; border-radius: 2px; cursor: pointer; }
 .btn-primary { background-color: #8f3235; color: white; }
 .btn-secondary { background-color: #a5a5a5; color: #fff; }
-
 .form-wrapper { padding: 0 15px; }
-.fsMargin {
-  margin: 10px 0 15px 0;
-  border: 1px solid #E9E8E6;
-  padding: 10px;
-  background-color: #f1f1f1;
-}
-.fsMargin legend {
-  padding: 0 10px;
-  font-size: 13px;
-}
-.labelBack {
-  background-color: #DADADA;
-  padding: 4px 12px;
-  vertical-align: middle;
-}
+.fsMargin { margin: 10px 0 15px 0; border: 1px solid #E9E8E6; padding: 10px; background-color: #f1f1f1; }
+.fsMargin legend { padding: 0 10px; font-size: 13px; }
+.labelBack { background-color: #DADADA; padding: 4px 12px; vertical-align: middle; }
 .labelTitle { font-size: 13px; color: black; font-family: Arial, Helvetica, sans-serif; }
 .field-value { padding-left: 12px; font-size: 13px; color: #333; }
 .edit-select { width: 80%; padding: 4px; border: 1px solid #ccc; font-size: 13px; box-sizing: border-box; }
-
-/* Sub-panel styling */
 .sub-panel-wrapper { margin: 0 15px 15px 15px; }
-.sub-panel-header {
-  background-color: #c7c7c7;
-  padding: 6px 12px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border: 2px solid #c7c7c7;
-}
-.sub-panel-body {
-  background-color: #ffffff;
-  padding: 10px 0;
-  border-left: 2px solid #c7c7c7;
-  border-right: 2px solid #c7c7c7;
-  border-bottom: 2px solid #c7c7c7;
-}
-.sub-panel-inner-box {
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 2px;
-  margin: 0 15px 10px 15px;
-}
+.sub-panel-header { background-color: #c7c7c7; padding: 6px 12px; cursor: pointer; display: flex; align-items: center; gap: 8px; border: 2px solid #c7c7c7; }
+.sub-panel-body { background-color: #ffffff; padding: 10px 0; border-left: 2px solid #c7c7c7; border-right: 2px solid #c7c7c7; border-bottom: 2px solid #c7c7c7; }
+.sub-panel-inner-box { background-color: #fff; border: 1px solid #ccc; border-radius: 2px; margin: 0 15px 10px 15px; }
 .table-scroll-container { overflow-x: auto; border-top: 1px solid #eee; }
 .dim-table th, .dim-table td { padding: 5px 8px; font-size: 11px; border: 1px solid #eee; white-space: nowrap; }
 .dim-table th { background: #f2f2f2; font-weight: bold; border-bottom: 2px solid #ddd; text-align: left; }
 .dim-table tbody tr:nth-child(odd) { background-color: #ffffff; }
 .dim-table tbody tr:nth-child(even) { background-color: #f8f8f8; }
+.box-header { background-color: #c7c7c7; padding: 6px 12px; border-bottom: 2px solid #c7c7c7; }
+.toolbar-row { padding: 8px 15px; border-bottom: 1px solid #ddd; }
+.action-row { background-color: #f7f7f7; }
 </style>
