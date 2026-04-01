@@ -526,7 +526,6 @@ const handleOpenShipmentBEdit = (record) => {
         </div>
       </div>
       <a href="#" :class="{ active: currentModule === 'magProp' }" @click.prevent="currentModule = 'magProp'; currentView = 'list'">MAGNETIC PROPERTIES</a>
-      <a href="#">CALIBRATION</a>
     </nav>
     <main class="content">
       <!-- VALIDATION MODULE -->
