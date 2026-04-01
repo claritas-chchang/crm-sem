@@ -68,6 +68,22 @@ const inspectionRecords = ref([
     remarks: 'Internal Check', creationDate: '2026-03-24 10:30:15', createdBy: 'qa-admin',
     updatedDate: '2026-03-24 10:30:15', updatedBy: 'qa-admin', finalResult: 'OK',
     selected: false 
+  },
+  { 
+    productType: 'Non-G', product: 'P000002', serialNo: 'SN-9900', revision: '02', 
+    dwgNo: 'DWG-12345', lotNo: 'LOT-B456', cDate: '2026-03-25', cLine: 'Line B',
+    paNo: 'PA-900', jpnLot: 'JPN-1001', mMethod: 'Min Outlier', firstRun: 'No',
+    remarks: 'Customer Request', creationDate: '2026-03-25 08:45:00', createdBy: 'qa-admin',
+    updatedDate: '2026-03-25 09:15:30', updatedBy: 'qa-admin', finalResult: 'OK',
+    selected: false 
+  },
+  { 
+    productType: 'G', product: 'P000003', serialNo: 'SN-1122', revision: '01', 
+    dwgNo: 'DWG-88888', lotNo: 'LOT-C789', cDate: '2026-03-26', cLine: 'Line A',
+    paNo: 'PA-885', jpnLot: 'JPN-995', mMethod: 'Average', firstRun: 'Yes',
+    remarks: 'Re-inspection needed', creationDate: '2026-03-26 14:00:10', createdBy: 'qa-admin',
+    updatedDate: '2026-03-26 14:00:10', updatedBy: 'qa-admin', finalResult: 'NG',
+    selected: false 
   }
 ])
 const selectedInspectionRecord = ref(null)
@@ -76,6 +92,18 @@ const samplingLevelRecords = ref([
  { 
     id: 1, name: 'I, AQL 1% (normal)', type: 'Normal', qty: '500', sSize: '5', r1: '5', r2: '5', r3: '15', r4: '15', r5: '15', selected: false,
     creationDate: '16-March-2026 12:58:05 PM', createdBy: 'qa-admin-p2', updatedDate: '16-March-2026 12:59:47 PM', updatedBy: 'qa-tech-p2' 
+ },
+ { 
+    id: 2, name: 'II, AQL 0.65% (normal)', type: 'Normal', qty: '1200', sSize: '8', r1: '8', r2: '8', r3: '20', r4: '20', r5: '20', selected: false,
+    creationDate: '17-March-2026 09:30:00 AM', createdBy: 'qa-admin-p2', updatedDate: '17-March-2026 10:15:22 AM', updatedBy: 'qa-tech-p2' 
+ },
+ { 
+    id: 3, name: 'III, AQL 2.5% (tightened)', type: 'Tightened', qty: '2500', sSize: '13', r1: '13', r2: '13', r3: '32', r4: '32', r5: '32', selected: false,
+    creationDate: '18-March-2026 02:00:15 PM', createdBy: 'qa-admin-p2', updatedDate: '18-March-2026 02:45:10 PM', updatedBy: 'qa-tech-p2' 
+ },
+ { 
+    id: 4, name: 'S-3, AQL 4.0% (reduced)', type: 'Reduced', qty: '3500', sSize: '20', r1: '20', r2: '20', r3: '50', r4: '50', r5: '50', selected: false,
+    creationDate: '19-March-2026 11:20:45 AM', createdBy: 'qa-admin-p2', updatedDate: '19-March-2026 11:55:30 AM', updatedBy: 'qa-tech-p2' 
  }
 ])
 const selectedSamplingLevelRecord = ref(null)
@@ -168,6 +196,69 @@ const erasureRecords = ref([
     createdTs: '27-March-2026 09:00:00 AM', 
     createdBy: 'qa-admin', 
     updatedTs: '27-March-2026 11:00:00 AM', 
+    updatedBy: 'qa-tech', 
+    selected: false 
+  },
+  { 
+    id: 'ER-002', 
+    date: '2026-03-28', 
+    time: '22:30', 
+    shift: 'Night', 
+    type: 'Outgoing (Magnets)', 
+    area: 'Production Line 1', 
+    results: 'Pass', 
+    performer: 'Mr. Chen', 
+    confirmer: 'Mrs. Lee', 
+    onePerDay: 'Completed', 
+    twoPerShift: 'Completed', 
+    spec: 'Level 2', 
+    method: 'Ultrasonic', 
+    remarks: 'Routine check', 
+    createdTs: '28-March-2026 10:00:00 PM', 
+    createdBy: 'qa-admin', 
+    updatedTs: '28-March-2026 11:30:00 PM', 
+    updatedBy: 'qa-tech', 
+    selected: false 
+  },
+  { 
+    id: 'ER-003', 
+    date: '2026-03-29', 
+    time: '14:15', 
+    shift: 'Day', 
+    type: 'Thin Model', 
+    area: 'Testing Lab', 
+    results: 'Pass', 
+    performer: 'Alice Brown', 
+    confirmer: 'Bob Wilson', 
+    onePerDay: 'Completed', 
+    twoPerShift: 'Pending', 
+    spec: 'Standard', 
+    method: 'Magnetic Field', 
+    remarks: 'New batch', 
+    createdTs: '29-March-2026 02:15:00 PM', 
+    createdBy: 'qa-admin', 
+    updatedTs: '29-March-2026 03:00:00 PM', 
+    updatedBy: 'qa-tech', 
+    selected: false 
+  },
+  { 
+    id: 'ER-004', 
+    date: '2026-03-30', 
+    time: '01:00', 
+    shift: 'Night', 
+    type: 'Environment Washing', 
+    area: 'Storage Room A', 
+    results: 'Fail', 
+    performer: 'Chris Evans', 
+    confirmer: 'Jane Smith', 
+    onePerDay: 'Incomplete', 
+    twoPerShift: 'Pending', 
+    spec: 'High Precision', 
+    method: 'Ion Gauge', 
+    remarks: 'Re-test required', 
+    createdTs: '30-March-2026 01:00:00 AM', 
+    createdBy: 'qa-admin', 
+    updatedTs: '30-March-2026 01:30:00 AM', 
     updatedBy: 'qa-tech', 
     selected: false 
   }
