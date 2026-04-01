@@ -25,14 +25,14 @@ const editingRecord = ref(null)
 const editingModule = ref('')
 
 const products = ref([
-  { id: 1, code: 'PNO000496', type: 'Internal Ver Lab (Other Plant)', selected: false },
-  { id: 2, code: 'PNO000495', type: 'Internal Ver Lab (Other Plant)', selected: false },
-  { id: 3, code: 'PNO000494', type: 'Internal Ver Lab (Other Plant)', selected: false },
-  { id: 4, code: 'PNO000493', type: 'Internal Ver Lab (Other Plant)', selected: false },
-  { id: 5, code: 'PNO000491', type: 'Internal Ver Lab (Other Plant)', selected: false },
-  { id: 6, code: 'PNO000489', type: 'Internal Ver Lab (Other Plant)', selected: false },
-  { id: 7, code: 'PNO000486', type: 'Internal Ver Lab (Other Plant)', selected: false },
-  { id: 8, code: 'PNO000482', type: 'Internal Ver Lab (Other Plant)', selected: false },
+  { id: 1, code: 'P000001', type: 'G', selected: false },
+  { id: 2, code: 'P000002', type: 'Non-G', selected: false },
+  { id: 3, code: 'P000003', type: 'G', selected: false },
+  { id: 4, code: 'P000004', type: 'Non-G', selected: false },
+  { id: 5, code: 'P000005', type: 'G', selected: false },
+  { id: 6, code: 'P000006', type: 'Non-G', selected: false },
+  { id: 7, code: 'P000007', type: 'G', selected: false },
+  { id: 8, code: 'P000008', type: 'Non-G', selected: false },
 ])
 
 const validationRecords = ref([
@@ -40,21 +40,21 @@ const validationRecords = ref([
     formNo: 'F-VAL-001', revision: '01', dateIssued: '2026-03-24 10:30:15', title: 'Micrometer Calibration', 
     spec: 'ISO-17025', eq: 'Digital Micrometer', eqSerial: 'MG-99482', freq: 'Monthly',
     date: '2026-03-24 08:00:00', shift: 'Day', type: 'Type 1: Comparator/Micrometer', year: '2026', month: 'March',
-    product: 'PNO000496', serialNo: 'SN-7788', vDate: '2026-03-24', vDue: '2026-04-24',
+    product: 'P000001', serialNo: 'SN-7788', vDate: '2026-03-24', vDue: '2026-04-24',
     selected: false 
   },
   { 
     formNo: 'F-VAL-002', revision: '02', dateIssued: '2026-03-23 14:45:00', title: 'Induction System Check', 
     spec: 'IEC-62305', eq: 'Induction Coil', eqSerial: 'IC-1122', freq: 'Quarterly',
     date: '2026-03-23 20:00:00', shift: 'Night', type: 'Type 2: Induction Check', year: '2026', month: 'March',
-    product: 'PNO000495', serialNo: 'SN-9900', vDate: '2026-03-23', vDue: '2026-06-23',
+    product: 'P000002', serialNo: 'SN-9900', vDate: '2026-03-23', vDue: '2026-06-23',
     selected: false 
   },
   { 
     formNo: 'F-VAL-003', revision: '01', dateIssued: '2026-03-24 09:15:30', title: 'Pin Gauge Verification', 
     spec: 'ANSI/ASME B89', eq: 'Master Pin Set', eqSerial: 'PS-8844', freq: 'Weekly',
     date: '2026-03-22 08:30:00', shift: 'Day', type: 'Type 3: Pin Gauge', year: '2026', month: 'March',
-    product: 'PNO000494', serialNo: 'SN-1122', vDate: '2026-03-22', vDue: '2026-03-29',
+    product: 'P000003', serialNo: 'SN-1122', vDate: '2026-03-22', vDue: '2026-03-29',
     selected: false 
   }
 ])
@@ -62,7 +62,7 @@ const selectedValidationRecord = ref(null)
 
 const inspectionRecords = ref([
   { 
-    productType: 'GA/VCM', product: 'PNO000496', serialNo: 'SN-7788', revision: '01', 
+    productType: 'G', product: 'P000001', serialNo: 'SN-7788', revision: '01', 
     dwgNo: 'DWG-99482', lotNo: 'LOT-A123', cDate: '2026-03-24', cLine: 'Line A',
     paNo: 'PA-882', jpnLot: 'JPN-990', mMethod: 'Max Outlier', firstRun: 'Yes',
     remarks: 'Internal Check', creationDate: '2026-03-24 10:30:15', createdBy: 'qa-admin',
