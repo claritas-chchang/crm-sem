@@ -100,9 +100,9 @@ const openCreate = () => {
                 </td>
                 <td><a href="#" class="item-link" @click.prevent="openDetail(record)">{{ record.testType }}</a></td>
                 <td>{{ record.platingDate }}</td>
-                <td>{{ record.testCondition }}</td>
+                <td style="white-space: pre-wrap;">{{ record.testCondition }}</td>
                 <td>{{ record.preparedBy }}</td>
-                <td>{{ record.criteria }}</td>
+                <td style="white-space: pre-wrap;">{{ record.criteria }}</td>
               </tr>
               <tr v-if="filteredRecords.length === 0">
                 <td colspan="7" style="text-align: center; padding: 20px; color: #666;">No reliability records found.</td>

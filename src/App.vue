@@ -263,6 +263,54 @@ const reliabilityRecords = ref([
     checkedBy: 'Manager',
     approvedBy: 'Director',
     selected: false
+  },
+  { 
+    id: 'REL-0002',
+    testType: 'Pull Test',
+    testCondition: 'Adhesive Ratio : 5 (AV138) : 2 (HV998)\nOven Curing : 4 hours (40oC)\nCooling : 15 minutes (room temperature)',
+    samplingFrequency: '3 pcs / line / day / any model',
+    criteria: '≥ 100 kg.f/cm2',
+    platingDate: '2026-03-31',
+    preparedBy: 'Admin',
+    checkedBy: 'Manager',
+    approvedBy: 'Director',
+    selected: false
+  },
+  { 
+    id: 'REL-0003',
+    testType: 'Quench Test',
+    testCondition: 'i) 180ºc x 1hr (HSA)\nii) 250ºc x 1hr (WDA)',
+    samplingFrequency: '1 pc / model / day / any line',
+    criteria: '*No blister, crack, lifting of plating after quench\n*No Ni peeled off by Tape Test',
+    platingDate: '2026-03-31',
+    preparedBy: 'Admin',
+    checkedBy: 'Manager',
+    approvedBy: 'Director',
+    selected: false
+  },
+  { 
+    id: 'REL-0004',
+    testType: 'Thermal Demagnetisation Test',
+    testCondition: '-',
+    samplingFrequency: '-',
+    criteria: '-',
+    platingDate: '2026-03-31',
+    preparedBy: 'Admin',
+    checkedBy: 'Manager',
+    approvedBy: 'Director',
+    selected: false
+  },
+  { 
+    id: 'REL-0005',
+    testType: 'Routine Reliability Test',
+    testCondition: '-',
+    samplingFrequency: '-',
+    criteria: '-',
+    platingDate: '2026-03-31',
+    preparedBy: 'Admin',
+    checkedBy: 'Manager',
+    approvedBy: 'Director',
+    selected: false
   }
 ])
 const selectedReliabilityRecord = ref(null)
