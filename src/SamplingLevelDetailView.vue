@@ -3,12 +3,14 @@ import { ref, watch } from 'vue'
 
 const props = defineProps({
   record: Object,
-  isCreating: Boolean
+  isCreating: Boolean,
+  isEditing: { type: Boolean, default: false },
+  isModal: { type: Boolean, default: false }
 })
 
 const emit = defineEmits(['back', 'save'])
 
-const isEditing = ref(props.isCreating)
+const isEditing = ref(props.isEditing || props.isCreating)
 const localRecord = ref({ ...props.record })
 
 watch(() => props.record, (newVal) => {
@@ -56,9 +58,9 @@ const typeOptions = ['--Please Select One--', 'Reduced', 'Normal']
 </script>
 
 <template>
-  <div class="top-record-box custom-sampling-detail">
+  <div :class="['top-record-box custom-sampling-detail', { 'modal-layout': isModal }]">
     <!-- Breadcrumbs -->
-    <div class="sub-header box-header">
+    <div v-if="!isModal" class="sub-header box-header">
       <svg class="folder-svg" viewBox="0 0 24 24" width="16" height="16" fill="#666"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
       <span class="breadcrumb">
         <a href="#" class="item-link" @click.prevent="goBack" style="font-weight: bold; color: #0000EE; text-decoration: underline;">SAMPLING LEVEL RECORDS</a> 
@@ -155,6 +157,11 @@ const typeOptions = ['--Please Select One--', 'Reduced', 'Normal']
   background-color: #fff;
   border: 2px solid var(--border-color);
   overflow: hidden;
+}
+.modal-layout {
+  border: none !important;
+  margin: 0 !important;
+  box-shadow: none !important;
 }
 
 .box-header {

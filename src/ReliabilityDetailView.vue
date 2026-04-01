@@ -3,7 +3,9 @@ import { ref, watch, onMounted, onUnmounted } from 'vue'
 
 const props = defineProps({
   record: { type: Object, default: () => null },
-  isCreating: { type: Boolean, default: false }
+  isCreating: { type: Boolean, default: false },
+  isEditing: { type: Boolean, default: false },
+  isModal: { type: Boolean, default: false }
 })
 
 const emit = defineEmits(['back', 'save'])
@@ -45,7 +47,7 @@ const testTypeData = {
 }
 
 const localRecord = ref({})
-const isEditing = ref(props.isCreating)
+const isEditing = ref(props.isEditing || props.isCreating)
 
 watch(() => props.record, (newVal) => {
   if (newVal) {
@@ -596,9 +598,9 @@ const cancelRoutineInlineEdit = () => {
 
 <template>
   <div class="view-panel">
-    <div class="top-record-box custom-reliability-detail">
+    <div :class="['top-record-box custom-reliability-detail', { 'modal-layout': isModal }]">
     <!-- Breadcrumbs -->
-    <div class="sub-header box-header">
+    <div v-if="!isModal" class="sub-header box-header">
       <svg class="folder-svg" viewBox="0 0 24 24" width="16" height="16" fill="#666"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
       <span class="breadcrumb" style="font-size: 14px;">
         <a href="#" class="item-link" @click.prevent="goBack" style="font-weight: bold; color: #0000EE;">RELIABILITY RECORDS</a> 
@@ -2155,5 +2157,11 @@ const cancelRoutineInlineEdit = () => {
   background-color: #f6f6f6;
   padding: 6px 15px;
   color: #333;
+}
+
+.modal-layout {
+  border: none !important;
+  margin: 0 !important;
+  box-shadow: none !important;
 }
 </style>

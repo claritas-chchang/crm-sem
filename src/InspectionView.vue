@@ -2,28 +2,18 @@
 import { ref, computed } from 'vue'
 import InspectionDetailView from './InspectionDetailView.vue'
 
+const props = defineProps(['records'])
+const emit = defineEmits(['open-edit', 'open-create', 'open-detail'])
+
 const currentView = ref('list')
 const selectedRecord = ref(null)
 const isCreating = ref(false)
 
-const records = ref([
-  { 
-    productType: 'GA/VCM', product: 'PNO000496', serialNo: 'SN-7788', revision: '01', 
-    dwgNo: 'DWG-99482', lotNo: 'LOT-A123', cDate: '2026-03-24', cLine: 'Line A',
-    paNo: 'PA-882', jpnLot: 'JPN-990', mMethod: 'Max Outlier', firstRun: 'Yes',
-    remarks: 'Internal Check', creationDate: '2026-03-24 10:30:15', createdBy: 'qa-admin',
-    updatedDate: '2026-03-24 10:30:15', updatedBy: 'qa-admin', finalResult: 'OK',
-    selected: false 
-  },
-  { 
-    productType: 'GA/VCM', product: 'PNO000495', serialNo: 'SN-9900', revision: '02', 
-    dwgNo: 'DWG-99481', lotNo: 'LOT-B456', cDate: '2026-03-23', cLine: 'Line B',
-    paNo: 'PA-883', jpnLot: 'JPN-991', mMethod: 'Max Value', firstRun: 'No',
-    remarks: 'Pre-shipment', creationDate: '2026-03-23 14:45:00', createdBy: 'qa-tech',
-    updatedDate: '2026-03-23 14:45:00', updatedBy: 'qa-tech', finalResult: 'OK',
-    selected: false 
-  }
-])
+const openEdit = (record) => {
+  emit('open-edit', record)
+}
+
+const internalRecords = computed(() => props.records || [])
 
 const filterOptions = [
   { value: '', label: '--Please Select One--' },
@@ -37,49 +27,30 @@ const searchQuery = ref('')
 const selectAll = ref(false)
 
 const filteredRecords = computed(() => {
-  if (!searchQuery.value) return records.value
-  return records.value.filter(r => {
+  if (!searchQuery.value) return internalRecords.value
+  return internalRecords.value.filter(r => {
     const field = selectedFilter.value || 'product'
     return String(r[field] || '').toLowerCase().includes(searchQuery.value.toLowerCase())
   })
 })
 
-const numSelected = computed(() => records.value.filter(r => r.selected).length)
+const numSelected = computed(() => internalRecords.value.filter(r => r.selected).length)
 
 const toggleSelectAll = () => {
   filteredRecords.value.forEach(r => r.selected = selectAll.value)
 }
 
 const viewRecord = (r) => {
-  selectedRecord.value = JSON.parse(JSON.stringify(r))
-  isCreating.value = false
-  currentView.value = 'view'
+  emit('open-detail', r)
 }
 
 const createNewRecord = () => {
-  selectedRecord.value = {
-    productType: 'GA/VCM', product: '', serialNo: '', revision: '01', 
-    dwgNo: '', lotNo: '', cDate: '', cLine: '',
-    paNo: '', jpnLot: '', mMethod: '--Please Select One--', firstRun: '--Please Select One--',
-    remarks: '', creationDate: '', createdBy: '',
-    updatedDate: '', updatedBy: '', finalResult: '--Please Select One--',
-    selected: false
-  }
-  isCreating.value = true
-  currentView.value = 'create'
+  emit('open-create')
 }
 
 const handleSave = (updated) => {
-  if (isCreating.value) {
-    records.value.push({ ...updated, selected: false })
-  } else {
-    const index = records.value.findIndex(r => r.product === updated.product && r.lotNo === updated.lotNo) // Simplified id
-    if (index !== -1) {
-      records.value[index] = { ...updated }
-    }
-  }
-  currentView.value = 'list'
-  isCreating.value = false
+  // Logic moved to App.vue via events if needed, but for internal state:
+  emit('save', updated)
 }
 </script>
 
@@ -146,7 +117,7 @@ const handleSave = (updated) => {
               >
                 <td class="col-checkbox"><input type="checkbox" v-model="r.selected" /></td>
                 <td class="col-icon">
-                  <svg @click="viewRecord(r)" viewBox="0 0 24 24" width="14" height="14" fill="#666" style="cursor: pointer;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                  <svg @click="openEdit(r)" viewBox="0 0 24 24" width="14" height="14" fill="#666" style="cursor: pointer;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                 </td>
                 <td>{{ r.productType }}</td>
                 <td><a href="#" class="item-link" @click.prevent="viewRecord(r)">{{ r.product }}</a></td>

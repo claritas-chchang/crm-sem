@@ -1,15 +1,18 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
+import EditModal from './EditModal.vue'
 
 const props = defineProps({
   record: Object,
-  isCreating: Boolean
+  isCreating: Boolean,
+  isEditing: { type: Boolean, default: false },
+  isModal: { type: Boolean, default: false }
 })
 
 const emit = defineEmits(['back', 'save'])
 
 const localRecord = ref({ ...props.record })
-const isEditing = ref(props.isCreating)
+const isEditing = ref(props.isEditing || props.isCreating)
 
 watch(() => props.record, (newVal) => {
   localRecord.value = { ...newVal }
@@ -257,6 +260,58 @@ const goBack = () => {
   emit('back')
 }
 
+// Subpanel Modal Logic
+const showMagPropModal = ref(false)
+const showProdMagPropModal = ref(false)
+const showAddSpecModal = ref(false)
+const isEditingSub = ref(false)
+
+const currentSubIdx = ref(-1)
+const editingMagProp = ref({ name: '', avg: '' })
+const editingProdMagProp = ref({ name: '', avg: '', min: '', max: '' })
+const editingAddSpec = ref({ item: '', judgment: '', instrument: '', symbol: '' })
+
+const openEditMagProp = (idx) => {
+  currentSubIdx.value = idx
+  editingMagProp.value = { ...magProps.value[idx] }
+  showMagPropModal.value = true
+}
+const saveMagProp = () => {
+  magProps.value[currentSubIdx.value] = { ...editingMagProp.value }
+  showMagPropModal.value = false
+}
+
+const openEditProdMagProp = (idx) => {
+  currentSubIdx.value = idx
+  editingProdMagProp.value = { ...prodMagProps.value[idx] }
+  showProdMagPropModal.value = true
+}
+const saveProdMagProp = () => {
+  prodMagProps.value[currentSubIdx.value] = { ...editingProdMagProp.value }
+  showProdMagPropModal.value = false
+}
+
+const openAddAddSpec = () => {
+  currentSubIdx.value = -1
+  editingAddSpec.value = { item: '', judgment: 'OK', instrument: '', symbol: '' }
+  isEditingSub.value = false
+  showAddSpecModal.value = true
+}
+const openEditAddSpec = (idx) => {
+  currentSubIdx.value = idx
+  editingAddSpec.value = { ...addSpecs.value[idx] }
+  isEditingSub.value = true
+  showAddSpecModal.value = true
+}
+const saveAddSpecModal = () => {
+  if (currentSubIdx.value === -1) {
+    addSpecs.value.push({ ...editingAddSpec.value })
+  } else {
+    addSpecs.value[currentSubIdx.value] = { ...editingAddSpec.value }
+  }
+  showAddSpecModal.value = false
+}
+
 // Save override
 const saveRecord = () => {
   emit('save', {
@@ -270,9 +325,9 @@ const saveRecord = () => {
 </script>
 
 <template>
-  <div class="top-record-box custom-shipment-a-detail">
+  <div :class="['top-record-box custom-shipment-a-detail', { 'modal-layout': isModal }]">
     <!-- Breadcrumbs -->
-    <div class="sub-header box-header">
+    <div v-if="!isModal" class="sub-header box-header">
       <svg class="folder-svg" viewBox="0 0 24 24" width="16" height="16" fill="#666"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
       <span class="breadcrumb" style="font-size: 14px;">
         <a href="#" class="item-link" @click.prevent="goBack" style="color: #0000EE;">SHIPMENT TYPE A RECORDS</a> 
@@ -402,18 +457,24 @@ const saveRecord = () => {
       <div class="sub-panel-body">
         <div class="sub-panel-inner-box">
           <div class="table-scroll-container">
-            <table class="dim-table" style="width: 100%; border-collapse: collapse;">
+            <table class="data-table dim-table no-margin">
               <thead>
                 <tr>
+                  <th style="width: 50px;"></th>
                   <th>Name</th>
                   <th>AVG</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="(row, idx) in magProps" :key="idx">
-                  <td>{{ row.name }}</td>
-                  <td>
-                    <span v-if="!isEditing">{{ row.avg }}</span>
+                  <td style="text-align: center;">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="#666" style="cursor: pointer;" @click="openEditMagProp(idx)">
+                      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                    </svg>
+                  </td>
+                  <td style="text-align: center;">{{ row.name }}</td>
+                  <td style="text-align: center;">
+                    <span v-if="!isEditing">{{ row.avg || '-' }}</span>
                     <input v-else type="text" v-model="row.avg" class="edit-select" style="width: 100%;" />
                   </td>
                 </tr>
@@ -433,9 +494,10 @@ const saveRecord = () => {
       <div class="sub-panel-body">
         <div class="sub-panel-inner-box">
           <div class="table-scroll-container">
-            <table class="dim-table" style="width: 100%; border-collapse: collapse;">
+            <table class="data-table dim-table no-margin">
               <thead>
                 <tr>
+                  <th style="width: 50px;"></th>
                   <th>Name</th>
                   <th>AVG</th>
                   <th>MIN</th>
@@ -444,17 +506,22 @@ const saveRecord = () => {
               </thead>
               <tbody>
                 <tr v-for="(row, idx) in prodMagProps" :key="idx">
-                  <td>{{ row.name }}</td>
-                  <td>
-                    <span v-if="!isEditing">{{ row.avg }}</span>
+                  <td style="text-align: center;">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="#666" style="cursor: pointer;" @click="openEditProdMagProp(idx)">
+                      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                    </svg>
+                  </td>
+                  <td style="text-align: center;">{{ row.name }}</td>
+                  <td style="text-align: center;">
+                    <span v-if="!isEditing">{{ row.avg || '-' }}</span>
                     <input v-else type="text" v-model="row.avg" class="edit-select" style="width: 100%;" />
                   </td>
-                  <td>
-                    <span v-if="!isEditing">{{ row.min }}</span>
+                  <td style="text-align: center;">
+                    <span v-if="!isEditing">{{ row.min || '-' }}</span>
                     <input v-else type="text" v-model="row.min" class="edit-select" style="width: 100%;" />
                   </td>
-                  <td>
-                    <span v-if="!isEditing">{{ row.max }}</span>
+                  <td style="text-align: center;">
+                    <span v-if="!isEditing">{{ row.max || '-' }}</span>
                     <input v-else type="text" v-model="row.max" class="edit-select" style="width: 100%;" />
                   </td>
                 </tr>
@@ -473,54 +540,44 @@ const saveRecord = () => {
       </div>
       <div class="sub-panel-body">
         <div class="sub-panel-inner-box">
-          
-          <div v-if="isEditing" class="action-row toolbar-row" style="border-bottom: 1px solid #ddd; padding: 6px 10px; background: #f7f7f7;">
-            <button class="btn btn-secondary" style="font-size: 11px; padding: 4px 10px;" @click.prevent="addAddSpec">Add Record</button>
+          <div class="sub-actions" style="padding: 5px 15px; border-bottom: 1px solid #ddd;">
+            <span class="text-link" @click="openAddAddSpec">Add New Record</span>
           </div>
 
           <div class="table-scroll-container">
-            <table class="dim-table" style="width: 100%; border-collapse: collapse;">
+            <table class="data-table dim-table no-margin">
               <thead>
                 <tr>
-                  <th v-if="isEditing" style="width: 40px; text-align: center;">Action</th>
+                  <th style="width: 50px;"></th>
                   <th>Item</th>
                   <th>Judgment</th>
                   <th>Instrument</th>
                   <th>The Symbol for Instrument</th>
+                  <th style="width: 100px;">Action</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="(row, idx) in addSpecs" :key="idx">
-                  <td v-if="isEditing" style="text-align: center;">
-                    <button class="btn btn-secondary" style="font-size: 10px; padding: 2px 6px;" @click.prevent="removeAddSpec(idx)">X</button>
+                  <td style="text-align: center;">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="#666" style="cursor: pointer;" @click="openEditAddSpec(idx)">
+                      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                    </svg>
                   </td>
-                  <td>
-                    <span v-if="!isEditing">{{ row.item }}</span>
-                    <select v-else v-model="row.item" class="edit-select" style="width: 100%;">
-                      <option v-for="opt in itemOpts" :key="opt" :value="opt">{{ opt }}</option>
-                    </select>
-                  </td>
-                  <td>
-                    <span v-if="!isEditing">{{ row.judgment }}</span>
-                    <select v-else v-model="row.judgment" class="edit-select" style="width: 100%;">
-                      <option v-for="opt in judgmentOpts" :key="opt" :value="opt">{{ opt }}</option>
-                    </select>
-                  </td>
-                  <td>
-                    <span v-if="!isEditing">{{ row.instrument }}</span>
-                    <select v-else v-model="row.instrument" class="edit-select" style="width: 100%;">
-                      <option v-for="opt in instrumentOpts" :key="opt" :value="opt">{{ opt }}</option>
-                    </select>
-                  </td>
-                  <td>
-                    <span v-if="!isEditing">{{ row.symbol }}</span>
-                    <select v-else v-model="row.symbol" class="edit-select" style="width: 100%;">
-                      <option v-for="opt in symbolOpts" :key="opt" :value="opt">{{ opt }}</option>
-                    </select>
+                  <td>{{ row.item || '-' }}</td>
+                  <td>{{ row.judgment || '-' }}</td>
+                  <td>{{ row.instrument || '-' }}</td>
+                  <td>{{ row.symbol || '-' }}</td>
+                  <td style="text-align: center;">
+                    <button class="btn btn-remove" @click="removeAddSpec(idx)">
+                      <svg viewBox="0 0 24 24" width="12" height="12" fill="#d9534f" style="margin-right: 4px; vertical-align: middle;">
+                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                      </svg>
+                      Remove
+                    </button>
                   </td>
                 </tr>
                 <tr v-if="addSpecs.length === 0">
-                  <td :colspan="isEditing ? 5 : 4" style="text-align: center; color: #999; padding: 15px;">No records added</td>
+                  <td colspan="6" style="text-align: center; color: #999; padding: 15px;">No records added</td>
                 </tr>
               </tbody>
             </table>
@@ -528,6 +585,111 @@ const saveRecord = () => {
         </div>
       </div>
     </div>
+
+    <!-- SUB-MODALS -->
+    <EditModal :show="showMagPropModal" title="EDIT MAGNETIC PROPERTY" @close="showMagPropModal = false">
+      <div class="form-wrapper modal-form">
+        <fieldset class="fsMargin">
+          <legend><b>Magnetic Property Details</b></legend>
+          <table border="0" style="width: 100%;">
+            <tbody>
+              <tr>
+                <td class="labelBack" style="width: 30%;"><span class="labelTitle">Name</span></td>
+                <td><div class="field-value">{{ editingMagProp.name }}</div></td>
+              </tr>
+              <tr>
+                <td class="labelBack"><span class="labelTitle">AVG</span></td>
+                <td><input type="text" v-model="editingMagProp.avg" class="edit-select" style="width: 100%;" /></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="top-actions" style="justify-content: flex-end; padding: 15px 0 0 0; background: transparent;">
+            <button class="btn btn-primary" @click="saveMagProp">SAVE</button>
+            <button class="btn btn-secondary" @click="showMagPropModal = false">Cancel</button>
+          </div>
+        </fieldset>
+      </div>
+    </EditModal>
+
+    <EditModal :show="showProdMagPropModal" title="EDIT PRODUCT MAGNETIC PROPERTY" @close="showProdMagPropModal = false">
+      <div class="form-wrapper modal-form">
+        <fieldset class="fsMargin">
+          <legend><b>Product Magnetic Property Details</b></legend>
+          <table border="0" style="width: 100%;">
+            <tbody>
+              <tr>
+                <td class="labelBack" style="width: 30%;"><span class="labelTitle">Name</span></td>
+                <td><div class="field-value">{{ editingProdMagProp.name }}</div></td>
+              </tr>
+              <tr>
+                <td class="labelBack"><span class="labelTitle">AVG</span></td>
+                <td><input type="text" v-model="editingProdMagProp.avg" class="edit-select" style="width: 100%;" /></td>
+              </tr>
+              <tr>
+                <td class="labelBack"><span class="labelTitle">MIN</span></td>
+                <td><input type="text" v-model="editingProdMagProp.min" class="edit-select" style="width: 100%;" /></td>
+              </tr>
+              <tr>
+                <td class="labelBack"><span class="labelTitle">MAX</span></td>
+                <td><input type="text" v-model="editingProdMagProp.max" class="edit-select" style="width: 100%;" /></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="top-actions" style="justify-content: flex-end; padding: 15px 0 0 0; background: transparent;">
+            <button class="btn btn-primary" @click="saveProdMagProp">SAVE</button>
+            <button class="btn btn-secondary" @click="showProdMagPropModal = false">Cancel</button>
+          </div>
+        </fieldset>
+      </div>
+    </EditModal>
+
+    <EditModal :show="showAddSpecModal" :title="isEditingSub ? 'EDIT SPECIFICATION' : 'ADD SPECIFICATION'" @close="showAddSpecModal = false">
+      <div class="form-wrapper modal-form">
+        <fieldset class="fsMargin">
+          <legend><b>Specification Details</b></legend>
+          <table border="0" style="width: 100%;">
+            <tbody>
+              <tr>
+                <td class="labelBack" style="width: 30%;"><span class="labelTitle">Item</span></td>
+                <td>
+                  <select v-model="editingAddSpec.item" class="edit-select" style="width: 100%;">
+                    <option v-for="opt in itemOpts" :key="opt" :value="opt">{{ opt }}</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td class="labelBack"><span class="labelTitle">Judgment</span></td>
+                <td>
+                  <select v-model="editingAddSpec.judgment" class="edit-select" style="width: 100%;">
+                    <option v-for="opt in judgmentOpts" :key="opt" :value="opt">{{ opt }}</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td class="labelBack"><span class="labelTitle">Instrument</span></td>
+                <td>
+                  <select v-model="editingAddSpec.instrument" class="edit-select" style="width: 100%;">
+                    <option v-for="opt in instrumentOpts" :key="opt" :value="opt">{{ opt }}</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td class="labelBack"><span class="labelTitle">Symbol</span></td>
+                <td>
+                  <select v-model="editingAddSpec.symbol" class="edit-select" style="width: 100%;">
+                    <option v-for="opt in symbolOpts" :key="opt" :value="opt">{{ opt }}</option>
+                  </select>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="top-actions" style="justify-content: flex-end; padding: 15px 0 0 0; background: transparent;">
+            <button class="btn btn-primary" @click="saveAddSpecModal">SAVE</button>
+            <button class="btn btn-secondary" @click="showAddSpecModal = false">Cancel</button>
+          </div>
+        </fieldset>
+      </div>
+    </EditModal>
 </template>
 
 <style scoped>
@@ -536,6 +698,11 @@ const saveRecord = () => {
   border: 2px solid #c7c7c7;
   margin: 15px;
   overflow: hidden;
+}
+.modal-layout {
+  border: none !important;
+  margin: 0 !important;
+  box-shadow: none !important;
 }
 .breadcrumb { font-size: 14px; font-weight: bold; }
 .item-link { color: #0000EE; text-decoration: none; }

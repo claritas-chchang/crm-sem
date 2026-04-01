@@ -2,20 +2,18 @@
 import { ref, computed } from 'vue'
 import SamplingLevelDetailView from './SamplingLevelDetailView.vue'
 
+const props = defineProps(['records'])
+const emit = defineEmits(['back', 'save', 'open-edit', 'open-create', 'open-detail'])
+
 const currentView = ref('list') // 'list', 'edit', 'view', 'create'
 const selectedRecord = ref(null)
 const isCreating = ref(false)
 
-const records = ref([
- { 
-    id: 1, name: 'I, AQL 1% (normal)', type: 'Normal', qty: '500', sSize: '5', r1: '5', r2: '5', r3: '15', r4: '15', r5: '15', selected: false,
-    creationDate: '16-March-2026 12:58:05 PM', createdBy: 'qa-admin-p2', updatedDate: '16-March-2026 12:59:47 PM', updatedBy: 'qa-tech-p2' 
- },
- { 
-    id: 2, name: 'I, AQL 1% (reduced)', type: 'Reduced', qty: '1201', sSize: '5', r1: '5', r2: '5', r3: '15', r4: '15', r5: '15', selected: false,
-    creationDate: '16-March-2026 12:58:05 PM', createdBy: 'qa-admin-p2', updatedDate: '16-March-2026 12:59:47 PM', updatedBy: 'qa-tech-p2' 
- }
-])
+const openEdit = (record) => {
+  emit('open-edit', record)
+}
+
+const internalRecords = computed(() => props.records || [])
 
 const filterOptions = [
   { value: '', label: '--Please Select One--' },
@@ -28,51 +26,33 @@ const searchQuery = ref('')
 const selectAll = ref(false)
 
 const filteredRecords = computed(() => {
-  if (!searchQuery.value) return records.value
-  return records.value.filter(r => {
+  if (!searchQuery.value) return internalRecords.value
+  return internalRecords.value.filter(r => {
     const field = selectedFilter.value || 'name'
     return String(r[field] || '').toLowerCase().includes(searchQuery.value.toLowerCase())
   })
 })
 
-const numSelected = computed(() => records.value.filter(r => r.selected).length)
+const numSelected = computed(() => internalRecords.value.filter(r => r.selected).length)
 
 const toggleSelectAll = () => {
   filteredRecords.value.forEach(r => r.selected = selectAll.value)
 }
 
 const openDetail = (record) => {
-  selectedRecord.value = JSON.parse(JSON.stringify(record))
-  isCreating.value = false
-  currentView.value = 'view'
+  emit('open-detail', record)
 }
 
 const openCreate = () => {
-  selectedRecord.value = {
-    name: '--Please Select One--', type: '--Please Select One--', 
-    qty: '', sSize: '', r1: '', r2: '', r3: '', r4: '', r5: ''
-  }
-  isCreating.value = true
-  currentView.value = 'create'
+  emit('open-create')
 }
 
 const handleBack = () => {
-  currentView.value = 'list'
-  selectedRecord.value = null
-  isCreating.value = false
+  emit('back')
 }
 
 const handleSave = (updated) => {
-  if (isCreating.value) {
-    updated.id = records.value.length + 1
-    updated.creationDate = '26-March-2026 04:30:00 PM'
-    updated.createdBy = 'qa-admin'
-    records.value.push({ ...updated, selected: false })
-  } else {
-    const idx = records.value.findIndex(r => r.id === updated.id)
-    if (idx !== -1) records.value[idx] = { ...updated }
-  }
-  handleBack()
+  emit('save', updated)
 }
 </script>
 
@@ -134,7 +114,7 @@ const handleSave = (updated) => {
               >
                 <td class="col-checkbox"><input type="checkbox" v-model="record.selected" /></td>
                 <td class="col-icon">
-                  <svg viewBox="0 0 24 24" width="14" height="14" fill="#666" style="cursor: pointer;" @click="openDetail(record)">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="#666" style="cursor: pointer;" @click="openEdit(record)">
                     <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                   </svg>
                 </td>

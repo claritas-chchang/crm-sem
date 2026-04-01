@@ -2,50 +2,18 @@
 import { ref, computed } from 'vue'
 import ValidationDetailView from './ValidationDetailView.vue'
 
-const props = defineProps(['productCode'])
-const emit = defineEmits(['back'])
+const props = defineProps(['productCode', 'records'])
+const emit = defineEmits(['back', 'open-edit', 'open-create', 'open-detail'])
 
 const currentView = ref('list')
 const selectedRecord = ref(null)
 const isCreating = ref(false)
 
-const records = ref([
-  { 
-    formNo: 'F-VAL-001', revision: '01', dateIssued: '2026-03-24 10:30:15', title: 'Micrometer Calibration', 
-    spec: 'ISO-17025', eq: 'Digital Micrometer', eqSerial: 'MG-99482', freq: 'Monthly',
-    date: '2026-03-24 08:00:00', shift: 'Day', type: 'Type 1: Comparator/Micrometer', year: '2026', month: 'March',
-    product: 'PNO000496', serialNo: 'SN-7788', vDate: '2026-03-24', vDue: '2026-04-24',
-    selected: false 
-  },
-  { 
-    formNo: 'F-VAL-002', revision: '02', dateIssued: '2026-03-23 14:45:00', title: 'Induction System Check', 
-    spec: 'IEC-62305', eq: 'Induction Coil', eqSerial: 'IC-1122', freq: 'Quarterly',
-    date: '2026-03-23 20:00:00', shift: 'Night', type: 'Type 2: Induction Check', year: '2026', month: 'March',
-    product: 'PNO000495', serialNo: 'SN-9900', vDate: '2026-03-23', vDue: '2026-06-23',
-    selected: false 
-  },
-  { 
-    formNo: 'F-VAL-003', revision: '01', dateIssued: '2026-03-24 09:15:30', title: 'Pin Gauge Verification', 
-    spec: 'ANSI/ASME B89', eq: 'Master Pin Set', eqSerial: 'PS-8844', freq: 'Weekly',
-    date: '2026-03-22 08:30:00', shift: 'Day', type: 'Type 3: Pin Gauge', year: '2026', month: 'March',
-    product: 'PNO000494', serialNo: 'SN-1122', vDate: '2026-03-22', vDue: '2026-03-29',
-    selected: false 
-  },
-  { 
-    formNo: 'F-VAL-004', revision: '01', dateIssued: '2026-03-21 11:00:00', title: 'Digital Micrometer Test', 
-    spec: 'ISO-17025', eq: 'Precision Block', eqSerial: 'PB-001', freq: 'Monthly',
-    date: '2026-03-21 21:00:00', shift: 'Night', type: 'Type 1: Comparator/Micrometer', year: '2026', month: 'March',
-    product: 'PNO000493', serialNo: 'SN-4455', vDate: '2026-03-21', vDue: '2026-04-21',
-    selected: false 
-  },
-  { 
-    formNo: 'F-VAL-005', revision: '01', dateIssued: '2026-03-24 16:20:00', title: 'Induction Sensor V', 
-    spec: 'IEC-62305', eq: 'Induction Sensor', eqSerial: 'IS-5566', freq: 'Monthly',
-    date: '2026-03-20 09:00:00', shift: 'Day', type: 'Type 2: Induction Check', year: '2026', month: 'March',
-    product: 'PNO000491', serialNo: 'SN-6677', vDate: '2026-03-20', vDue: '2026-04-20',
-    selected: false 
-  }
-])
+const openEdit = (record) => {
+  emit('open-edit', record)
+}
+
+const internalRecords = computed(() => props.records || [])
 
 const filterOptions = [
   { value: '', label: '--Please Select One--' },
@@ -59,14 +27,14 @@ const searchQuery = ref('')
 const selectAll = ref(false)
 
 const filteredRecords = computed(() => {
-  if (!searchQuery.value) return records.value
-  return records.value.filter(r => {
+  if (!searchQuery.value) return internalRecords.value
+  return internalRecords.value.filter(r => {
     const field = selectedFilter.value || 'title'
     return r[field]?.toLowerCase().includes(searchQuery.value.toLowerCase())
   })
 })
 
-const numSelected = computed(() => records.value.filter(r => r.selected).length)
+const numSelected = computed(() => internalRecords.value.filter(r => r.selected).length)
 
 const toggleSelectAll = () => {
   filteredRecords.value.forEach(r => r.selected = selectAll.value)
@@ -77,48 +45,11 @@ const editRecord = (no) => {
 }
 
 const viewRecord = (r) => {
-  selectedRecord.value = r
-  isCreating.value = false
-  currentView.value = 'view'
+  emit('open-detail', r)
 }
 
 const createNewRecord = () => {
-  const nextNum = records.value.length + 1
-  const formNo = `F-VAL-${nextNum.toString().padStart(3, '0')}`
-  
-  selectedRecord.value = {
-    formNo: formNo, revision: '01', dateIssued: '', title: '', 
-    spec: '', eq: '', eqSerial: '', freq: '--Please Select One--',
-    date: '', shift: '--Please Select One--', type: '--Please Select One--', year: '2026', month: '',
-    product: '', serialNo: '', vDate: '', vDue: '',
-    selected: false,
-    judgement: '--Please Select One--',
-    blockSResult: '--Please Select One--',
-    micSResult: '--Please Select One--',
-    coilResult: '--Please Select One--',
-    sensorResult: '--Please Select One--',
-    permError: '',
-    gpVal: '-0.002mm',
-    npVal: '0.002mm',
-    microZero: '--Please Select One--',
-    gpNorminal: '',
-    gpFront: '',
-    gpFR1: '',
-    gpFR2: '',
-    gpEnd: '',
-    gpER1: '',
-    gpER2: '',
-    gpResult: '--Please Select One--',
-    npNorminal: '',
-    npFront: '',
-    npFR1: '',
-    npFR2: '',
-    npResult: '--Please Select One--',
-    checkedBy: '',
-    verifiedBy: ''
-  }
-  isCreating.value = true
-  currentView.value = 'create'
+  emit('open-create')
 }
 
 const handleSave = (updated) => {
@@ -201,7 +132,7 @@ const handleSave = (updated) => {
               >
                 <td class="col-checkbox"><input type="checkbox" v-model="r.selected" /></td>
                 <td class="col-icon">
-                  <svg @click="viewRecord(r)" viewBox="0 0 24 24" width="14" height="14" fill="#666" style="cursor: pointer;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                  <svg @click="openEdit(r)" viewBox="0 0 24 24" width="14" height="14" fill="#666" style="cursor: pointer;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                 </td>
                 <td><a href="#" class="item-link" @click.prevent="viewRecord(r)">{{ r.formNo }}</a></td>
                 <td>{{ r.revision }}</td>

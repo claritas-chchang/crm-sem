@@ -14,8 +14,15 @@ import ShipmentTypeBView from './ShipmentTypeBView.vue'
 import ShipmentTypeBDetailView from './ShipmentTypeBDetailView.vue'
 import ReliabilityView from './ReliabilityView.vue'
 import ReliabilityDetailView from './ReliabilityDetailView.vue'
+import ValidationDetailView from './ValidationDetailView.vue'
+import InspectionDetailView from './InspectionDetailView.vue'
+import SamplingLevelDetailView from './SamplingLevelDetailView.vue'
+import EditModal from './EditModal.vue'
 
 const currentModule = ref('product')
+const showEditModal = ref(false)
+const editingRecord = ref(null)
+const editingModule = ref('')
 
 const products = ref([
   { id: 1, code: 'PNO000496', type: 'Internal Ver Lab (Other Plant)', selected: false },
@@ -27,6 +34,51 @@ const products = ref([
   { id: 7, code: 'PNO000486', type: 'Internal Ver Lab (Other Plant)', selected: false },
   { id: 8, code: 'PNO000482', type: 'Internal Ver Lab (Other Plant)', selected: false },
 ])
+
+const validationRecords = ref([
+  { 
+    formNo: 'F-VAL-001', revision: '01', dateIssued: '2026-03-24 10:30:15', title: 'Micrometer Calibration', 
+    spec: 'ISO-17025', eq: 'Digital Micrometer', eqSerial: 'MG-99482', freq: 'Monthly',
+    date: '2026-03-24 08:00:00', shift: 'Day', type: 'Type 1: Comparator/Micrometer', year: '2026', month: 'March',
+    product: 'PNO000496', serialNo: 'SN-7788', vDate: '2026-03-24', vDue: '2026-04-24',
+    selected: false 
+  },
+  { 
+    formNo: 'F-VAL-002', revision: '02', dateIssued: '2026-03-23 14:45:00', title: 'Induction System Check', 
+    spec: 'IEC-62305', eq: 'Induction Coil', eqSerial: 'IC-1122', freq: 'Quarterly',
+    date: '2026-03-23 20:00:00', shift: 'Night', type: 'Type 2: Induction Check', year: '2026', month: 'March',
+    product: 'PNO000495', serialNo: 'SN-9900', vDate: '2026-03-23', vDue: '2026-06-23',
+    selected: false 
+  },
+  { 
+    formNo: 'F-VAL-003', revision: '01', dateIssued: '2026-03-24 09:15:30', title: 'Pin Gauge Verification', 
+    spec: 'ANSI/ASME B89', eq: 'Master Pin Set', eqSerial: 'PS-8844', freq: 'Weekly',
+    date: '2026-03-22 08:30:00', shift: 'Day', type: 'Type 3: Pin Gauge', year: '2026', month: 'March',
+    product: 'PNO000494', serialNo: 'SN-1122', vDate: '2026-03-22', vDue: '2026-03-29',
+    selected: false 
+  }
+])
+const selectedValidationRecord = ref(null)
+
+const inspectionRecords = ref([
+  { 
+    productType: 'GA/VCM', product: 'PNO000496', serialNo: 'SN-7788', revision: '01', 
+    dwgNo: 'DWG-99482', lotNo: 'LOT-A123', cDate: '2026-03-24', cLine: 'Line A',
+    paNo: 'PA-882', jpnLot: 'JPN-990', mMethod: 'Max Outlier', firstRun: 'Yes',
+    remarks: 'Internal Check', creationDate: '2026-03-24 10:30:15', createdBy: 'qa-admin',
+    updatedDate: '2026-03-24 10:30:15', updatedBy: 'qa-admin', finalResult: 'OK',
+    selected: false 
+  }
+])
+const selectedInspectionRecord = ref(null)
+
+const samplingLevelRecords = ref([
+ { 
+    id: 1, name: 'I, AQL 1% (normal)', type: 'Normal', qty: '500', sSize: '5', r1: '5', r2: '5', r3: '15', r4: '15', r5: '15', selected: false,
+    creationDate: '16-March-2026 12:58:05 PM', createdBy: 'qa-admin-p2', updatedDate: '16-March-2026 12:59:47 PM', updatedBy: 'qa-tech-p2' 
+ }
+])
+const selectedSamplingLevelRecord = ref(null)
 
 const filterOptions = [
   { value: '', label: '--Please Select One--' },
@@ -331,6 +383,113 @@ const handleSaveReliability = (record) => {
     reliabilityRecords.value.push({ ...record, selected: false })
   }
   currentView.value = 'list'
+  showEditModal.value = false
+}
+
+const handleOpenEdit = (moduleName, record) => {
+  editingModule.value = moduleName
+  editingRecord.value = { ...record }
+  showEditModal.value = true
+}
+
+const handleSaveEdit = (updated) => {
+  // Find which list to update based on editingModule
+  if (editingModule.value === 'erasure') handleSaveErasure(updated)
+  else if (editingModule.value === 'magProp') handleSaveMagProp(updated)
+  else if (editingModule.value === 'shipmentA') handleSaveShipmentA(updated)
+  else if (editingModule.value === 'shipmentB') handleSaveShipmentB(updated)
+  else if (editingModule.value === 'reliability') handleSaveReliability(updated)
+  else if (editingModule.value === 'product') {
+    const idx = products.value.findIndex(p => p.code === updated.code)
+    if (idx !== -1) products.value[idx] = updated
+  }
+  else if (editingModule.value === 'validation') handleSaveValidation(updated)
+  else if (editingModule.value === 'inspection') handleSaveInspection(updated)
+  else if (editingModule.value === 'samplingLevel') handleSaveSamplingLevel(updated)
+  showEditModal.value = false
+}
+
+const handleOpenValidationDetail = (record) => {
+  selectedValidationRecord.value = record
+  currentView.value = 'view'
+}
+const handleOpenValidationCreate = () => {
+  selectedValidationRecord.value = { formNo: 'New', title: '' }
+  currentView.value = 'create'
+}
+const handleSaveValidation = (record) => {
+  const idx = validationRecords.value.findIndex(r => r.formNo === record.formNo)
+  if (idx !== -1) validationRecords.value[idx] = record
+  else validationRecords.value.push({ ...record, selected: false })
+  currentView.value = 'list'
+}
+
+const handleOpenInspectionDetail = (record) => {
+  selectedInspectionRecord.value = record
+  currentView.value = 'view'
+}
+const handleOpenInspectionCreate = () => {
+  selectedInspectionRecord.value = { product: 'New', lotNo: '' }
+  currentView.value = 'create'
+}
+const handleSaveInspection = (record) => {
+  const idx = inspectionRecords.value.findIndex(r => r.product === record.product && r.lotNo === record.lotNo)
+  if (idx !== -1) inspectionRecords.value[idx] = record
+  else inspectionRecords.value.push({ ...record, selected: false })
+  currentView.value = 'list'
+}
+
+const handleOpenSamplingLevelDetail = (record) => {
+  selectedSamplingLevelRecord.value = record
+  currentView.value = 'view'
+}
+const handleOpenSamplingLevelCreate = () => {
+  selectedSamplingLevelRecord.value = { id: Date.now(), name: 'New' }
+  currentView.value = 'create'
+}
+const handleSaveSamplingLevel = (record) => {
+  const idx = samplingLevelRecords.value.findIndex(r => r.id === record.id)
+  if (idx !== -1) samplingLevelRecords.value[idx] = record
+  else samplingLevelRecords.value.push({ ...record, selected: false })
+  currentView.value = 'list'
+}
+
+/* Page-level Edit Handlers (New) */
+const handleOpenProductEdit = (record) => {
+  selectedProductCode.value = record.code
+  currentView.value = 'edit'
+}
+const handleOpenValidationEdit = (record) => {
+  selectedValidationRecord.value = record
+  currentView.value = 'edit'
+}
+const handleOpenInspectionEdit = (record) => {
+  selectedInspectionRecord.value = record
+  currentView.value = 'edit'
+}
+const handleOpenSamplingLevelEdit = (record) => {
+  selectedSamplingLevelRecord.value = record
+  currentView.value = 'edit'
+}
+const handleOpenErasureEdit = (record) => {
+  selectedErasureRecord.value = record
+  currentView.value = 'edit'
+}
+const handleOpenReliabilityEdit = (record) => {
+  selectedReliabilityRecord.value = record
+  currentView.value = 'edit'
+}
+const handleOpenMagPropEdit = (record) => {
+  selectedMagPropRecord.value = record
+  currentView.value = 'edit'
+}
+const handleOpenShipmentAEdit = (record) => {
+  selectedShipmentARecord.value = record
+  currentView.value = 'edit'
+}
+const handleOpenShipmentBEdit = (record) => {
+  selectedShipmentBRecord.value = record
+  currentView.value = 'edit'
 }
 </script>
 
@@ -369,45 +528,53 @@ const handleSaveReliability = (record) => {
       <a href="#" :class="{ active: currentModule === 'magProp' }" @click.prevent="currentModule = 'magProp'; currentView = 'list'">MAGNETIC PROPERTIES</a>
       <a href="#">CALIBRATION</a>
     </nav>
-
     <main class="content">
       <!-- VALIDATION MODULE -->
-      <ValidationView v-if="currentModule === 'validation'" />
+      <template v-if="currentModule === 'validation'">
+        <ValidationView v-if="currentView === 'list'" :records="validationRecords" @open-create="handleOpenValidationCreate" @open-detail="handleOpenValidationDetail" @open-edit="handleOpenValidationEdit" />
+        <ValidationDetailView v-else :record="selectedValidationRecord" :isCreating="currentView === 'create'" :isEditing="currentView === 'edit'" @back="backToList" @save="handleSaveValidation" />
+      </template>
 
       <!-- INSPECTION MODULE -->
-      <InspectionView v-else-if="currentModule === 'inspection'" />
+      <template v-else-if="currentModule === 'inspection'">
+        <InspectionView v-if="currentView === 'list'" :records="inspectionRecords" @open-create="handleOpenInspectionCreate" @open-detail="handleOpenInspectionDetail" @open-edit="handleOpenInspectionEdit" />
+        <InspectionDetailView v-else :record="selectedInspectionRecord" :isCreating="currentView === 'create'" :isEditing="currentView === 'edit'" @back="backToList" @save="handleSaveInspection" />
+      </template>
 
       <!-- SAMPLING LEVEL MODULE -->
-      <SamplingLevelView v-else-if="currentModule === 'samplingLevel'" />
+      <template v-else-if="currentModule === 'samplingLevel'">
+        <SamplingLevelView v-if="currentView === 'list'" :records="samplingLevelRecords" @open-create="handleOpenSamplingLevelCreate" @open-detail="handleOpenSamplingLevelDetail" @open-edit="handleOpenSamplingLevelEdit" />
+        <SamplingLevelDetailView v-else :record="selectedSamplingLevelRecord" :isCreating="currentView === 'create'" :isEditing="currentView === 'edit'" @back="backToList" @save="handleSaveSamplingLevel" />
+      </template>
 
       <!-- ERASURE MODULE -->
       <template v-else-if="currentModule === 'erasure'">
-        <ErasureView v-if="currentView === 'list'" :records="erasureRecords" @open-create="handleOpenErasureCreate" @open-detail="handleOpenErasureDetail" />
-        <ErasureDetailView v-else :record="selectedErasureRecord" :isCreating="currentView === 'create'" @back="backToList" @save="handleSaveErasure" />
+        <ErasureView v-if="currentView === 'list'" :records="erasureRecords" @open-create="handleOpenErasureCreate" @open-detail="handleOpenErasureDetail" @open-edit="handleOpenErasureEdit" />
+        <ErasureDetailView v-else :record="selectedErasureRecord" :isCreating="currentView === 'create'" :isEditing="currentView === 'edit'" @back="backToList" @save="handleSaveErasure" />
       </template>
 
       <!-- RELIABILITY MODULE -->
       <template v-else-if="currentModule === 'reliability'">
-        <ReliabilityView v-if="currentView === 'list'" :records="reliabilityRecords" @open-create="handleOpenReliabilityCreate" @open-detail="handleOpenReliabilityDetail" />
-        <ReliabilityDetailView v-else :record="selectedReliabilityRecord" :isCreating="currentView === 'create'" @back="backToList" @save="handleSaveReliability" />
+        <ReliabilityView v-if="currentView === 'list'" :records="reliabilityRecords" @open-create="handleOpenReliabilityCreate" @open-detail="handleOpenReliabilityDetail" @open-edit="handleOpenReliabilityEdit" />
+        <ReliabilityDetailView v-else :record="selectedReliabilityRecord" :isCreating="currentView === 'create'" :isEditing="currentView === 'edit'" @back="backToList" @save="handleSaveReliability" />
       </template>
 
       <!-- MAGNETIC PROPERTIES MODULE -->
       <template v-else-if="currentModule === 'magProp'">
-        <MagneticPropertiesView v-if="currentView === 'list'" :records="magPropRecords" @open-create="handleOpenMagPropCreate" @open-detail="handleOpenMagPropDetail" />
-        <MagneticPropertiesDetailView v-else :record="selectedMagPropRecord" :isCreating="currentView === 'create'" @back="backToList" @save="handleSaveMagProp" />
+        <MagneticPropertiesView v-if="currentView === 'list'" :records="magPropRecords" @open-create="handleOpenMagPropCreate" @open-detail="handleOpenMagPropDetail" @open-edit="handleOpenMagPropEdit" />
+        <MagneticPropertiesDetailView v-else :record="selectedMagPropRecord" :isCreating="currentView === 'create'" :isEditing="currentView === 'edit'" @back="backToList" @save="handleSaveMagProp" />
       </template>
 
       <!-- SHIPMENT TYPE A MODULE -->
       <template v-else-if="currentModule === 'shipmentA'">
-        <ShipmentTypeAView v-if="currentView === 'list'" :records="shipmentARecords" @open-create="handleOpenShipmentACreate" @open-detail="handleOpenShipmentADetail" />
-        <ShipmentTypeADetailView v-else :record="selectedShipmentARecord" :isCreating="currentView === 'create'" @back="backToList" @save="handleSaveShipmentA" />
+        <ShipmentTypeAView v-if="currentView === 'list'" :records="shipmentARecords" @open-create="handleOpenShipmentACreate" @open-detail="handleOpenShipmentADetail" @open-edit="handleOpenShipmentAEdit" />
+        <ShipmentTypeADetailView v-else :record="selectedShipmentARecord" :isCreating="currentView === 'create'" :isEditing="currentView === 'edit'" @back="backToList" @save="handleSaveShipmentA" />
       </template>
 
       <!-- SHIPMENT TYPE B MODULE -->
       <template v-else-if="currentModule === 'shipmentB'">
-        <ShipmentTypeBView v-if="currentView === 'list'" :records="shipmentBRecords" @open-create="handleOpenShipmentBCreate" @open-detail="handleOpenShipmentBDetail" />
-        <ShipmentTypeBDetailView v-else :record="selectedShipmentBRecord" :isCreating="currentView === 'create'" @back="backToList" @save="handleSaveShipmentB" />
+        <ShipmentTypeBView v-if="currentView === 'list'" :records="shipmentBRecords" @open-create="handleOpenShipmentBCreate" @open-detail="handleOpenShipmentBDetail" @open-edit="handleOpenShipmentBEdit" />
+        <ShipmentTypeBDetailView v-else :record="selectedShipmentBRecord" :isCreating="currentView === 'create'" :isEditing="currentView === 'edit'" @back="backToList" @save="handleSaveShipmentB" />
       </template>
 
       <!-- PRODUCT RECORDS MODULE -->
@@ -467,7 +634,7 @@ const handleSaveReliability = (record) => {
                   >
                     <td class="col-checkbox"><input type="checkbox" v-model="item.selected" /></td>
                     <td class="col-icon">
-                      <svg @click="viewProduct(item.code)" viewBox="0 0 24 24" width="14" height="14" fill="#666" style="cursor: pointer;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                      <svg @click="handleOpenProductEdit(item)" viewBox="0 0 24 24" width="14" height="14" fill="#666" style="cursor: pointer;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                     </td>
                     <td><a href="#" class="item-link" @click.prevent="viewProduct(item.code)">{{ item.code }}</a></td>
                     <td>{{ item.type }}</td>
@@ -497,9 +664,28 @@ const handleSaveReliability = (record) => {
           </div>
         </div>
       </div>
-      <ProductView v-else :productCode="selectedProductCode" :isCreating="currentView === 'create'" @back="backToList" />
-    </template>
+        <ProductView v-else :productCode="selectedProductCode" :isCreating="currentView === 'create'" :isEditing="currentView === 'edit'" @back="backToList" @save="handleSaveEdit" />
+      </template>
     </main>
+    
+    <!-- GLOBAL EDIT MODAL -->
+    <EditModal 
+      :show="showEditModal" 
+      :title="'EDIT ' + editingModule.toUpperCase() + ' RECORD'"
+      @close="showEditModal = false"
+    >
+      <div class="modal-content-inner">
+        <ErasureDetailView v-if="editingModule === 'erasure'" :record="editingRecord" :isCreating="false" :isEditing="true" :isModal="true" @back="showEditModal = false" @save="handleSaveEdit" />
+        <ReliabilityDetailView v-else-if="editingModule === 'reliability'" :record="editingRecord" :isCreating="false" :isEditing="true" :isModal="true" @back="showEditModal = false" @save="handleSaveEdit" />
+        <MagneticPropertiesDetailView v-else-if="editingModule === 'magProp'" :record="editingRecord" :isCreating="false" :isEditing="true" :isModal="true" @back="showEditModal = false" @save="handleSaveEdit" />
+        <ShipmentTypeADetailView v-else-if="editingModule === 'shipmentA'" :record="editingRecord" :isCreating="false" :isEditing="true" :isModal="true" @back="showEditModal = false" @save="handleSaveEdit" />
+        <ShipmentTypeBDetailView v-else-if="editingModule === 'shipmentB'" :record="editingRecord" :isCreating="false" :isEditing="true" :isModal="true" @back="showEditModal = false" @save="handleSaveEdit" />
+        <ProductView v-else-if="editingModule === 'product'" :productCode="editingRecord.code" :isCreating="false" :isEditing="true" :isModal="true" @back="showEditModal = false" @save="handleSaveEdit" />
+        <ValidationDetailView v-else-if="editingModule === 'validation'" :record="editingRecord" :isCreating="false" :isEditing="true" :isModal="true" @back="showEditModal = false" @save="handleSaveEdit" />
+        <InspectionDetailView v-else-if="editingModule === 'inspection'" :record="editingRecord" :isCreating="false" :isEditing="true" :isModal="true" @back="showEditModal = false" @save="handleSaveEdit" />
+        <SamplingLevelDetailView v-else-if="editingModule === 'samplingLevel'" :record="editingRecord" :isCreating="false" :isEditing="true" :isModal="true" @back="showEditModal = false" @save="handleSaveEdit" />
+      </div>
+    </EditModal>
   </div>
 </template>
 

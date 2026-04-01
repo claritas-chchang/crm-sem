@@ -3,7 +3,9 @@ import { ref, onMounted, onUnmounted } from 'vue'
 
 const props = defineProps({
   productCode: String,
-  isCreating: Boolean
+  isCreating: Boolean,
+  isEditing: { type: Boolean, default: false },
+  isModal: { type: Boolean, default: false }
 })
 
 const emit = defineEmits(['back', 'save'])
@@ -11,7 +13,7 @@ const emit = defineEmits(['back', 'save'])
 const productType = ref('G')
 const typeOptions = ['G', 'Non-G']
 
-const isEditing = ref(props.isCreating)
+const isEditing = ref(props.isEditing || props.isCreating)
 const tempProductType = ref(props.isCreating ? '' : productType.value)
 const localProductCode = ref('')
 
@@ -82,8 +84,19 @@ const initialNewDim = {
 
 const newDim = ref({ ...initialNewDim })
 
+const isEditingSub = ref(false)
+const editingIdx = ref(-1)
+
 const openAddModal = () => {
   newDim.value = { ...initialNewDim }
+  isEditingSub.value = false
+  showAddModal.value = true
+}
+
+const openEditModal = (idx) => {
+  editingIdx.value = idx
+  newDim.value = { ...dimensions.value[idx] }
+  isEditingSub.value = true
   showAddModal.value = true
 }
 
@@ -185,9 +198,9 @@ const goBack = () => {
 <template>
   <div class="view-panel">
     
-    <div class="top-record-box">
+    <div :class="['top-record-box', { 'modal-layout': isModal }]">
       <!-- Box 1 Header: Breadcrumbs -->
-      <div class="sub-header box-header">
+      <div v-if="!isModal" class="sub-header box-header">
         <svg class="folder-svg" viewBox="0 0 24 24" width="16" height="16" fill="#666"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
         <span class="breadcrumb" style="font-size: 14px;">
           <a href="#" class="item-link" @click.prevent="goBack" style="font-weight: bold; color: #0000EE;">PRODUCT RECORDS</a> 
@@ -321,7 +334,9 @@ const goBack = () => {
               <tbody>
                 <tr v-for="(d, idx) in dimensions" :key="idx">
                   <td class="col-icon">
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="#666" style="cursor: pointer;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="#666" style="cursor: pointer;" @click="openEditModal(idx)">
+                      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                    </svg>
                   </td>
                   <td>{{ d.name }}</td>
                   <td>{{ d.min }}</td>
@@ -411,12 +426,12 @@ const goBack = () => {
         <!-- Sub Header identical to app style -->
         <div class="sub-header modal-sub-header">
           <svg class="folder-svg" viewBox="0 0 24 24" width="16" height="16" fill="#666"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
-          <span style="font-weight: bold; color: black;">DIMENSION MANAGEMENT</span>
+          <span style="font-weight: bold; color: black;">{{ isEditingSub ? 'EDIT DIMENSION' : 'DIMENSION MANAGEMENT' }}</span>
         </div>
         
         <div class="panel modal-panel">
           <div class="top-actions" style="padding: 15px 0 10px 0; background-color: transparent;">
-            <button class="btn btn-primary" @click="addDimension">ADD</button>
+            <button class="btn btn-primary" @click="addDimension">{{ isEditingSub ? 'SAVE' : 'ADD' }}</button>
             <button class="btn btn-secondary" @click="showAddModal = false">Cancel</button>
           </div>
 
@@ -580,6 +595,11 @@ const goBack = () => {
   border: 2px solid #c7c7c7; /* Updated to match main list */
   margin: 0 15px 15px 15px;
   overflow: hidden;
+}
+.modal-layout {
+  border: none !important;
+  margin: 0 !important;
+  box-shadow: none !important;
 }
 
 .top-actions {
