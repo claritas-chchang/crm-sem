@@ -167,6 +167,36 @@ const saveInlineEdit = () => {
   editingCell.value = { rowIdx: -1, field: '' }
 }
 
+const isEditingSubRecord = ref(false)
+const subRecordToEditIdx = ref(-1)
+
+const openEditModal = (idx) => {
+  subRecordToEditIdx.value = idx
+  newRecord.value = { ...qaRecords.value[idx] }
+  // Reverse format loadingDateTime for datetime-local input
+  if (newRecord.value.loadingDateTime && newRecord.value.loadingDateTime !== '-') {
+    newRecord.value.loadingDateTime = newRecord.value.loadingDateTime.replace(' ', 'T')
+  }
+  isEditingSubRecord.value = true
+  showAddModal.value = true
+}
+
+const updateTestRecord = () => {
+  let loadingDateTime = '-'
+  if (newRecord.value.loadingDateTime) {
+    loadingDateTime = newRecord.value.loadingDateTime.replace('T', ' ')
+  }
+  
+  const formattedRec = {
+    ...newRecord.value,
+    loadingDateTime: loadingDateTime
+  }
+  
+  qaRecords.value[subRecordToEditIdx.value] = formattedRec
+  showAddModal.value = false
+  isEditingSubRecord.value = false
+}
+
 const cancelInlineEdit = () => {
   if (editingCell.value.rowIdx !== -1) {
     qaRecords.value[editingCell.value.rowIdx][editingCell.value.field] = originalValue.value
@@ -267,6 +297,19 @@ const openAddPullModal = () => {
   showAddPullModal.value = true
 }
 
+const openEditPullModal = (idx) => {
+  subRecordToEditIdx.value = idx
+  newPullRecord.value = { ...pullRecords.value[idx] }
+  isEditingSubRecord.value = true
+  showAddPullModal.value = true
+}
+
+const updatePullRecord = () => {
+  pullRecords.value[subRecordToEditIdx.value] = { ...newPullRecord.value }
+  showAddPullModal.value = false
+  isEditingSubRecord.value = false
+}
+
 const addPullRecord = () => {
   pullRecords.value.push({ ...newPullRecord.value })
   showAddPullModal.value = false
@@ -325,6 +368,26 @@ const newQuenchRecord = ref({ ...initialNewQuenchRecord })
 const openAddQuenchModal = () => {
   newQuenchRecord.value = { ...initialNewQuenchRecord }
   showAddQuenchModal.value = true
+}
+
+const openEditQuenchModal = (idx) => {
+  subRecordToEditIdx.value = idx
+  newQuenchRecord.value = { ...quenchRecords.value[idx] }
+  if (newQuenchRecord.value.testingDateTime && newQuenchRecord.value.testingDateTime !== '-') {
+    newQuenchRecord.value.testingDateTime = newQuenchRecord.value.testingDateTime.replace(' ', 'T')
+  }
+  isEditingSubRecord.value = true
+  showAddQuenchModal.value = true
+}
+
+const updateQuenchRecord = () => {
+  const formattedRec = { ...newQuenchRecord.value }
+  if (formattedRec.testingDateTime) {
+    formattedRec.testingDateTime = formattedRec.testingDateTime.replace('T', ' ')
+  }
+  quenchRecords.value[subRecordToEditIdx.value] = formattedRec
+  showAddQuenchModal.value = false
+  isEditingSubRecord.value = false
 }
 
 const addQuenchRecord = () => {
@@ -420,6 +483,19 @@ const openAddThermalModal = () => {
   showAddThermalModal.value = true
 }
 
+const openEditThermalModal = (idx) => {
+  subRecordToEditIdx.value = idx
+  newThermalRecord.value = JSON.parse(JSON.stringify(thermalRecords.value[idx]))
+  isEditingSubRecord.value = true
+  showAddThermalModal.value = true
+}
+
+const updateThermalRecord = () => {
+  thermalRecords.value[subRecordToEditIdx.value] = JSON.parse(JSON.stringify(newThermalRecord.value))
+  showAddThermalModal.value = false
+  isEditingSubRecord.value = false
+}
+
 const addThermalRecord = () => {
   thermalRecords.value.push(JSON.parse(JSON.stringify(newThermalRecord.value)))
   showAddThermalModal.value = false
@@ -478,6 +554,19 @@ const newRoutineRecord = ref({ ...initialNewRoutineRecord })
 const openAddRoutineModal = () => {
   newRoutineRecord.value = JSON.parse(JSON.stringify(initialNewRoutineRecord))
   showAddRoutineModal.value = true
+}
+
+const openEditRoutineModal = (idx) => {
+  subRecordToEditIdx.value = idx
+  newRoutineRecord.value = JSON.parse(JSON.stringify(routineRecords.value[idx]))
+  isEditingSubRecord.value = true
+  showAddRoutineModal.value = true
+}
+
+const updateRoutineRecord = () => {
+  routineRecords.value[subRecordToEditIdx.value] = JSON.parse(JSON.stringify(newRoutineRecord.value))
+  showAddRoutineModal.value = false
+  isEditingSubRecord.value = false
 }
 
 const addRoutineRecord = () => {
@@ -655,7 +744,7 @@ const cancelRoutineInlineEdit = () => {
             <tbody>
               <tr v-for="(rec, idx) in qaRecords" :key="idx">
                 <td class="col-icon">
-                  <svg viewBox="0 0 24 24" width="14" height="14" fill="#666" style="cursor: pointer;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="#666" style="cursor: pointer;" @click="openEditModal(idx)"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                 </td>
                 <td>{{ rec.platingDate }}</td>
                 <td>{{ rec.line }}</td>
@@ -749,7 +838,7 @@ const cancelRoutineInlineEdit = () => {
             <tbody>
               <tr v-for="(rec, idx) in pullRecords" :key="idx">
                 <td class="col-icon">
-                  <svg viewBox="0 0 24 24" width="14" height="14" fill="#666" style="cursor: pointer;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="#666" style="cursor: pointer;" @click="openEditPullModal(idx)"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                 </td>
                 <td>{{ rec.platingLine }}</td>
                 <td>{{ rec.model }}</td>
@@ -836,7 +925,7 @@ const cancelRoutineInlineEdit = () => {
             <tbody>
               <tr v-for="(rec, idx) in quenchRecords" :key="idx">
                 <td class="col-icon">
-                  <svg viewBox="0 0 24 24" width="14" height="14" fill="#666" style="cursor: pointer;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="#666" style="cursor: pointer;" @click="openEditQuenchModal(idx)"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                 </td>
                 <td>{{ rec.month }}</td>
                 <td>{{ rec.year }}</td>
@@ -942,7 +1031,7 @@ const cancelRoutineInlineEdit = () => {
             <tbody>
               <tr v-for="(rec, idx) in thermalRecords" :key="idx">
                 <td class="col-icon">
-                  <svg viewBox="0 0 24 24" width="14" height="14" fill="#666" style="cursor: pointer;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="#666" style="cursor: pointer;" @click="openEditThermalModal(idx)"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                 </td>
                 <td>{{ rec.month }}</td>
                 <td>{{ rec.year }}</td>
@@ -1063,7 +1152,7 @@ const cancelRoutineInlineEdit = () => {
             <tbody>
               <tr v-for="(rec, idx) in routineRecords" :key="idx">
                 <td class="col-icon">
-                  <svg viewBox="0 0 24 24" width="14" height="14" fill="#666" style="cursor: pointer;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="#666" style="cursor: pointer;" @click="openEditRoutineModal(idx)"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                 </td>
                 <td>{{ rec.month }}</td>
                 <td>{{ rec.year }}</td>
@@ -1151,8 +1240,8 @@ const cancelRoutineInlineEdit = () => {
       
       <div class="panel modal-panel">
         <div class="top-actions" style="padding: 15px 0 10px 0; background-color: transparent;">
-          <button class="btn btn-primary" @click="addTestRecord">ADD</button>
-          <button class="btn btn-secondary" @click="showAddModal = false">Cancel</button>
+          <button class="btn btn-primary" @click="isEditingSubRecord ? updateTestRecord() : addTestRecord()">{{ isEditingSubRecord ? 'UPDATE' : 'ADD' }}</button>
+          <button class="btn btn-secondary" @click="showAddModal = false; isEditingSubRecord = false">Cancel</button>
         </div>
 
         <div class="section-container" style="margin: 0; box-shadow: none;">
@@ -1328,8 +1417,8 @@ const cancelRoutineInlineEdit = () => {
         </div>
         
         <div class="top-actions" style="padding: 15px 0 0 0; background-color: transparent;">
-          <button class="btn btn-primary" @click="addPullRecord">ADD</button>
-          <button class="btn btn-secondary" @click="showAddPullModal = false">Cancel</button>
+          <button class="btn btn-primary" @click="isEditingSubRecord ? updatePullRecord() : addPullRecord()">{{ isEditingSubRecord ? 'UPDATE' : 'ADD' }}</button>
+          <button class="btn btn-secondary" @click="showAddPullModal = false; isEditingSubRecord = false">Cancel</button>
         </div>
       </div>
     </div>
@@ -1427,8 +1516,8 @@ const cancelRoutineInlineEdit = () => {
         </div>
         
         <div class="top-actions" style="padding: 15px 0 0 0; background-color: transparent;">
-          <button class="btn btn-primary" @click="addQuenchRecord">ADD</button>
-          <button class="btn btn-secondary" @click="showAddQuenchModal = false">Cancel</button>
+          <button class="btn btn-primary" @click="isEditingSubRecord ? updateQuenchRecord() : addQuenchRecord()">{{ isEditingSubRecord ? 'UPDATE' : 'ADD' }}</button>
+          <button class="btn btn-secondary" @click="showAddQuenchModal = false; isEditingSubRecord = false">Cancel</button>
         </div>
       </div>
     </div>
@@ -1444,8 +1533,8 @@ const cancelRoutineInlineEdit = () => {
       
       <div class="panel modal-panel">
         <div class="top-actions" style="padding: 15px 0 10px 0; background-color: transparent;">
-          <button class="btn btn-primary" @click="addThermalRecord">ADD</button>
-          <button class="btn btn-secondary" @click="showAddThermalModal = false">Cancel</button>
+          <button class="btn btn-primary" @click="isEditingSubRecord ? updateThermalRecord() : addThermalRecord()">{{ isEditingSubRecord ? 'UPDATE' : 'ADD' }}</button>
+          <button class="btn btn-secondary" @click="showAddThermalModal = false; isEditingSubRecord = false">Cancel</button>
         </div>
 
         <!-- Basic Info Section -->
@@ -1719,8 +1808,8 @@ const cancelRoutineInlineEdit = () => {
         </div>
         
         <div class="top-actions" style="padding: 15px 0 0 0; background-color: transparent;">
-          <button class="btn btn-primary" @click="addRoutineRecord">ADD</button>
-          <button class="btn btn-secondary" @click="showAddRoutineModal = false">Cancel</button>
+          <button class="btn btn-primary" @click="isEditingSubRecord ? updateRoutineRecord() : addRoutineRecord()">{{ isEditingSubRecord ? 'UPDATE' : 'ADD' }}</button>
+          <button class="btn btn-secondary" @click="showAddRoutineModal = false; isEditingSubRecord = false">Cancel</button>
         </div>
       </div>
     </div>
