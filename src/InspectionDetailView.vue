@@ -1,5 +1,6 @@
 <script setup>
 import { ref, watch, onMounted, onUnmounted } from 'vue'
+import EditModal from './EditModal.vue'
 
 const props = defineProps({
   record: Object,
@@ -131,8 +132,63 @@ const handleGlobalClick = (e) => {
   }
 }
 
+// Subpanel 2 Modal Logic
+const showInspectedModal = ref(false)
+const isEditingInspected = ref(false)
+const currentInspectedIdx = ref(-1)
+
+const initialInspectedRecord = {
+  itemNo: '', name: '', eqName: '', eqSerial: '', minSpec: '', maxSpec: '', 
+  sampSize: '', testsPerSamp: '', farthestResult: '', maxResult: '', 
+  sumMax: '', sumMin: '', sumAvg: '', stdDev: '', cp: '', cpk: '', rank: '', 
+  judgement: 'OK'
+}
+
+const editingInspected = ref({ ...initialInspectedRecord })
+
 const openAddModal = () => {
-  alert('Add Dimension to be Inspected clicked. (Modal Logic to be implemented)')
+  editingInspected.value = { ...initialInspectedRecord, itemNo: (inspectedDimensions.value.length + 1).toString() }
+  isEditingInspected.value = false
+  currentInspectedIdx.value = -1
+  showInspectedModal.value = true
+}
+
+const openEditInspected = (idx) => {
+  currentInspectedIdx.value = idx
+  editingInspected.value = { ...inspectedDimensions.value[idx] }
+  isEditingInspected.value = true
+  showInspectedModal.value = true
+}
+
+const saveInspectedModal = () => {
+  const now = new Date().toLocaleString()
+  const user = 'qa-admin' // Simplified for demo
+  
+  if (currentInspectedIdx.value === -1) {
+    inspectedDimensions.value.push({
+      ...editingInspected.value,
+      createdBy: user,
+      createdTs: now,
+      updatedBy: user,
+      updatedTs: now
+    })
+  } else {
+    const old = inspectedDimensions.value[currentInspectedIdx.value]
+    inspectedDimensions.value[currentInspectedIdx.value] = {
+      ...editingInspected.value,
+      createdBy: old.createdBy,
+      createdTs: old.createdTs,
+      updatedBy: user,
+      updatedTs: now
+    }
+  }
+  showInspectedModal.value = false
+}
+
+const removeInspected = (idx) => {
+  if (confirm('Are you sure you want to remove this record?')) {
+    inspectedDimensions.value.splice(idx, 1)
+  }
 }
 
 onMounted(() => {
@@ -276,7 +332,6 @@ onUnmounted(() => {
           <table class="data-table dim-table">
             <thead>
               <tr>
-                <th class="col-icon"></th>
                 <th>Name</th>
                 <th>Min Spec</th>
                 <th>Max Spec</th>
@@ -293,9 +348,6 @@ onUnmounted(() => {
             </thead>
             <tbody>
               <tr v-for="(d, idx) in dimensions" :key="idx">
-                <td class="col-icon">
-                  <svg viewBox="0 0 24 24" width="14" height="14" fill="#666" style="cursor: pointer;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                </td>
                 <td>{{ d.name }}</td>
                 <td>{{ d.min }}</td>
                 <td>{{ d.max }}</td>
@@ -401,12 +453,15 @@ onUnmounted(() => {
                 <th>Created TS</th>
                 <th>Updated By</th>
                 <th>Updated TS</th>
+                <th style="width: 80px; text-align: center;">Action</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(id, idx) in inspectedDimensions" :key="idx">
                 <td class="col-icon">
-                  <svg viewBox="0 0 24 24" width="14" height="14" fill="#666" style="cursor: pointer;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="#666" style="cursor: pointer;" @click="openEditInspected(idx)">
+                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                  </svg>
                 </td>
                 <td>{{ id.itemNo }}</td>
                 <td>{{ id.name }}</td>
@@ -430,6 +485,11 @@ onUnmounted(() => {
                 <td>{{ id.createdTs }}</td>
                 <td>{{ id.updatedBy }}</td>
                 <td>{{ id.updatedTs }}</td>
+                <td style="text-align: center;">
+                  <button class="btn btn-remove" @click="removeInspected(idx)" style="padding: 2px 6px; font-size: 10px; background-color: #d9534f; color: white; border: none; border-radius: 2px; cursor: pointer;">
+                    Remove
+                  </button>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -451,6 +511,110 @@ onUnmounted(() => {
       </div>
     </div>
   </div>
+  <EditModal :show="showInspectedModal" :title="isEditingInspected ? 'EDIT INSPECTED DIMENSION' : 'ADD INSPECTED DIMENSION'" @close="showInspectedModal = false">
+    <div class="modal-panel" style="max-height: 85vh; overflow-y: auto; padding-top: 15px;">
+      <!-- TOP ACTION BAR -->
+      <div class="top-actions" style="padding: 0 0 15px 0; background-color: transparent; border-bottom: none;">
+        <button class="btn btn-primary" @click="saveInspectedModal" style="padding: 8px 24px;">{{ isEditingInspected ? 'SAVE' : 'ADD' }}</button>
+        <button class="btn btn-secondary" @click="showInspectedModal = false" style="padding: 8px 24px;">Cancel</button>
+      </div>
+
+      <div class="section-container" style="margin-top: 0;">
+        <div class="section-title" style="background: none; border: none; padding: 0 0 5px 0; font-size: 13px; color: #666; font-weight: normal;">Dimension Details</div>
+        <div class="info-grid" style="border: 1px solid #ccc;">
+          <!-- COLUMN 1 -->
+          <div class="grid-col" style="border-right: 1px solid #ccc;">
+            <div class="grid-row">
+              <div class="grid-label modal-label">Item No</div>
+              <div class="grid-value modal-value"><input type="text" class="form-input" v-model="editingInspected.itemNo" /></div>
+            </div>
+            <div class="grid-row">
+              <div class="grid-label modal-label">Name</div>
+              <div class="grid-value modal-value"><input type="text" class="form-input" v-model="editingInspected.name" /></div>
+            </div>
+            <div class="grid-row">
+              <div class="grid-label modal-label">Equipment Name</div>
+              <div class="grid-value modal-value"><input type="text" class="form-input" v-model="editingInspected.eqName" /></div>
+            </div>
+            <div class="grid-row">
+              <div class="grid-label modal-label">Serial Number</div>
+              <div class="grid-value modal-value"><input type="text" class="form-input" v-model="editingInspected.eqSerial" /></div>
+            </div>
+            <div class="grid-row">
+              <div class="grid-label modal-label">Min Spec</div>
+              <div class="grid-value modal-value"><input type="text" class="form-input" v-model="editingInspected.minSpec" /></div>
+            </div>
+            <div class="grid-row">
+              <div class="grid-label modal-label">Max Spec</div>
+              <div class="grid-value modal-value"><input type="text" class="form-input" v-model="editingInspected.maxSpec" /></div>
+            </div>
+            <div class="grid-row">
+              <div class="grid-label modal-label">Sampling Size</div>
+              <div class="grid-value modal-value"><input type="text" class="form-input" v-model="editingInspected.sampSize" /></div>
+            </div>
+            <div class="grid-row">
+              <div class="grid-label modal-label">Test Per Sample</div>
+              <div class="grid-value modal-value"><input type="text" class="form-input" v-model="editingInspected.testsPerSamp" /></div>
+            </div>
+          </div>
+          
+          <!-- COLUMN 2 -->
+          <div class="grid-col">
+            <div class="grid-row">
+              <div class="grid-label modal-label">Farthest Result</div>
+              <div class="grid-value modal-value"><input type="text" class="form-input" v-model="editingInspected.farthestResult" /></div>
+            </div>
+            <div class="grid-row">
+              <div class="grid-label modal-label">Max Result</div>
+              <div class="grid-value modal-value"><input type="text" class="form-input" v-model="editingInspected.maxResult" /></div>
+            </div>
+            <div class="grid-row">
+              <div class="grid-label modal-label">Summary Max</div>
+              <div class="grid-value modal-value"><input type="text" class="form-input" v-model="editingInspected.sumMax" /></div>
+            </div>
+            <div class="grid-row">
+              <div class="grid-label modal-label">Summary Min</div>
+              <div class="grid-value modal-value"><input type="text" class="form-input" v-model="editingInspected.sumMin" /></div>
+            </div>
+            <div class="grid-row">
+              <div class="grid-label modal-label">Summary Avg</div>
+              <div class="grid-value modal-value"><input type="text" class="form-input" v-model="editingInspected.sumAvg" /></div>
+            </div>
+            <div class="grid-row">
+              <div class="grid-label modal-label">Std Deviation</div>
+              <div class="grid-value modal-value"><input type="text" class="form-input" v-model="editingInspected.stdDev" /></div>
+            </div>
+            <div class="grid-row">
+              <div class="grid-label modal-label">Cp / Cpk</div>
+              <div class="grid-value modal-value" style="gap: 5px;">
+                <input type="text" class="form-input" v-model="editingInspected.cp" placeholder="Cp" style="width: 48%;" />
+                <input type="text" class="form-input" v-model="editingInspected.cpk" placeholder="Cpk" style="width: 48%;" />
+              </div>
+            </div>
+            <div class="grid-row">
+              <div class="grid-label modal-label">Rank</div>
+              <div class="grid-value modal-value"><input type="text" class="form-input" v-model="editingInspected.rank" /></div>
+            </div>
+            <div class="grid-row" style="border-bottom: none;">
+              <div class="grid-label modal-label">Judgement</div>
+              <div class="grid-value modal-value">
+                <select v-model="editingInspected.judgement" class="form-input" style="height: 28px;">
+                  <option value="OK">OK</option>
+                  <option value="NG">NG</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTTOM ACTION BAR -->
+      <div class="top-actions" style="padding: 15px 0 10px 0; background-color: transparent; border-bottom: none;">
+        <button class="btn btn-primary" @click="saveInspectedModal" style="padding: 8px 24px;">{{ isEditingInspected ? 'SAVE' : 'ADD' }}</button>
+        <button class="btn btn-secondary" @click="showInspectedModal = false" style="padding: 8px 24px;">Cancel</button>
+      </div>
+    </div>
+  </EditModal>
 </template>
 
 <style scoped>
@@ -486,6 +650,20 @@ onUnmounted(() => {
 }
 .btn-primary { background-color: #8f3235; color: white; }
 .btn-secondary { background-color: #a5a5a5; color: #fff; }
+
+/* MODAL UI SYNC WITH PRODUCT VIEW */
+.modal-panel { padding: 0 15px 15px 15px; }
+.section-container { margin: 15px 0; border: 1px solid #ddd; background-color: #fcfcfc; }
+.section-title { background: #eee; padding: 6px 12px; font-weight: bold; font-size: 13px; border-bottom: 1px solid #ddd; }
+.info-grid { display: flex; flex-wrap: wrap; }
+.grid-col { flex: 1; min-width: 300px; }
+.grid-row { display: flex; border-bottom: 1px solid #eee; }
+.grid-row:last-child { border-bottom: none; }
+.modal-label { background-color: #f2f2f2; width: 180px; padding: 8px 12px; font-size: 13px; border-right: 1px solid #eee; display: flex; align-items: center; }
+.modal-value { flex: 1; padding: 4px 8px; background-color: #fff; display: flex; align-items: center; }
+.form-input { width: 100%; height: 28px; border: 1px solid #ccc; padding: 2px 8px; font-size: 13px; box-sizing: border-box; border-radius: 2px; }
+.form-input:focus { border-color: #8f3235; outline: none; }
+
 .form-wrapper {
   margin: 0;
   padding: 0 15px;

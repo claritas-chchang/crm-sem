@@ -53,11 +53,11 @@ const thinModelBatches = ref([
 ])
 
 const magnetModelBatches = ref([
-  { id: 1, min: '', avg: '', max: '', maxSpec: '', triggerLimit: '', remark: '', swabbedBy: '', erasureBy: '', verifiedBy: '' },
-  { id: 2, min: '', avg: '', max: '', maxSpec: '', triggerLimit: '', remark: '', swabbedBy: '', erasureBy: '', verifiedBy: '' },
-  { id: 3, min: '', avg: '', max: '', maxSpec: '', triggerLimit: '', remark: '', swabbedBy: '', erasureBy: '', verifiedBy: '' },
-  { id: 4, min: '', avg: '', max: '', maxSpec: '', triggerLimit: '', remark: '', swabbedBy: '', erasureBy: '', verifiedBy: '' },
-  { id: 5, min: '', avg: '', max: '', maxSpec: '', triggerLimit: '', remark: '', swabbedBy: '', erasureBy: '', verifiedBy: '' },
+  { id: 1, r1: '', r2: '', r3: '', r4: '', r5: '', min: '', avg: '', max: '', maxSpec: '', triggerLimit: '', remark: '', swabbedBy: '', erasureBy: '', verifiedBy: '' },
+  { id: 2, r1: '', r2: '', r3: '', r4: '', r5: '', min: '', avg: '', max: '', maxSpec: '', triggerLimit: '', remark: '', swabbedBy: '', erasureBy: '', verifiedBy: '' },
+  { id: 3, r1: '', r2: '', r3: '', r4: '', r5: '', min: '', avg: '', max: '', maxSpec: '', triggerLimit: '', remark: '', swabbedBy: '', erasureBy: '', verifiedBy: '' },
+  { id: 4, r1: '', r2: '', r3: '', r4: '', r5: '', min: '', avg: '', max: '', maxSpec: '', triggerLimit: '', remark: '', swabbedBy: '', erasureBy: '', verifiedBy: '' },
+  { id: 5, r1: '', r2: '', r3: '', r4: '', r5: '', min: '', avg: '', max: '', maxSpec: '', triggerLimit: '', remark: '', swabbedBy: '', erasureBy: '', verifiedBy: '' },
 ])
 </script>
 
@@ -175,35 +175,27 @@ const magnetModelBatches = ref([
               <td class="labelBack"><span class="labelTitle">Action</span></td>
               <td><div v-if="!isEditing" class="field-value">{{ localRecord.actionThin || '-' }}</div><input v-else type="text" v-model="localRecord.actionThin" class="edit-select" /></td>
             </tr>
+            <!-- Integrated Fields from Sub Panel -->
+            <tr>
+              <td class="labelBack"><span class="labelTitle">Batch Number</span></td>
+              <td><div v-if="!isEditing" class="field-value">{{ localRecord.batchNoThin || '-' }}</div><input v-else type="text" v-model="localRecord.batchNoThin" class="edit-select" /></td>
+              <td class="labelBack"><span class="labelTitle">Plating Line</span></td>
+              <td><div v-if="!isEditing" class="field-value">{{ localRecord.platingLineThin || '-' }}</div><input v-else type="text" v-model="localRecord.platingLineThin" class="edit-select" /></td>
+            </tr>
+            <tr>
+              <td class="labelBack"><span class="labelTitle">Erasure Line</span></td>
+              <td><div v-if="!isEditing" class="field-value">{{ localRecord.erasureLineThin || '-' }}</div><input v-else type="text" v-model="localRecord.erasureLineThin" class="edit-select" /></td>
+              <td class="labelBack"><span class="labelTitle">Performed By</span></td>
+              <td><div v-if="!isEditing" class="field-value">{{ localRecord.performedByThin || '-' }}</div><input v-else type="text" v-model="localRecord.performedByThin" class="edit-select" /></td>
+            </tr>
+            <tr>
+              <td class="labelBack"><span class="labelTitle">Remarks</span></td>
+              <td><div v-if="!isEditing" class="field-value">{{ localRecord.remarksThin || '-' }}</div><input v-else type="text" v-model="localRecord.remarksThin" class="edit-select" /></td>
+              <td class="labelBack"></td>
+              <td></td>
+            </tr>
           </tbody>
         </table>
-        
-        <!-- Batch Number Sub Panel inside Thin Model -->
-        <div style="margin-top: 15px; border-top: 1px solid #ccc; padding-top: 10px;">
-          <div style="background-color: #DADADA; padding: 4px 10px; font-weight: bold; font-size: 13px; margin-bottom: 5px;">Batch Number Sub Panel</div>
-          <div style="overflow-x: auto;">
-            <table class="grid-table" style="width: 100%; border-collapse: collapse;">
-              <thead>
-                <tr style="background-color: #f2f2f2; font-size: 11px;">
-                  <th style="border: 1px solid #ccc; padding: 4px;">Batch Number</th>
-                  <th style="border: 1px solid #ccc; padding: 4px;">Plating Line</th>
-                  <th style="border: 1px solid #ccc; padding: 4px;">Erasure Line</th>
-                  <th style="border: 1px solid #ccc; padding: 4px;">Remarks</th>
-                  <th style="border: 1px solid #ccc; padding: 4px;">Performed By</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="b in thinModelBatches" :key="b.id">
-                  <td style="border: 1px solid #ccc; padding: 4px; text-align: center; font-size: 11px;">{{ b.id }}</td>
-                  <td style="border: 1px solid #ccc; padding: 4px;"><input v-if="isEditing" v-model="b.platingLine" class="grid-input" /><span v-else>{{ b.platingLine }}</span></td>
-                  <td style="border: 1px solid #ccc; padding: 4px;"><input v-if="isEditing" v-model="b.erasureLine" class="grid-input" /><span v-else>{{ b.erasureLine }}</span></td>
-                  <td style="border: 1px solid #ccc; padding: 4px;"><input v-if="isEditing" v-model="b.remarks" class="grid-input" /><span v-else>{{ b.remarks }}</span></td>
-                  <td style="border: 1px solid #ccc; padding: 4px;"><input v-if="isEditing" v-model="b.performer" class="grid-input" /><span v-else>{{ b.performer }}</span></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
       </fieldset>
 
       <!-- Conditional Section 3: Outgoing Magnet Details (Show / Hide) -->
@@ -235,45 +227,57 @@ const magnetModelBatches = ref([
               <td class="labelBack"><span class="labelTitle">Magnet Pack Number</span></td>
               <td><div v-if="!isEditing" class="field-value">{{ localRecord.magPackNo || '-' }}</div><input v-else type="text" v-model="localRecord.magPackNo" class="edit-select" /></td>
             </tr>
+            <!-- New Integrated Fields (Replacing Table Design) -->
+            <tr>
+              <td class="labelBack"><span class="labelTitle">Batch Number</span></td>
+              <td><div v-if="!isEditing" class="field-value">{{ localRecord.batchNo || '-' }}</div><input v-else type="text" v-model="localRecord.batchNo" class="edit-select" /></td>
+              <td class="labelBack"><span class="labelTitle">Minimum</span></td>
+              <td><div v-if="!isEditing" class="field-value">{{ localRecord.minMag || '-' }}</div><input v-else type="text" v-model="localRecord.minMag" class="edit-select" /></td>
+            </tr>
+            <tr>
+              <td class="labelBack"><span class="labelTitle">1</span></td>
+              <td><div v-if="!isEditing" class="field-value">{{ localRecord.r1 || '-' }}</div><input v-else type="text" v-model="localRecord.r1" class="edit-select" /></td>
+              <td class="labelBack"><span class="labelTitle">Average</span></td>
+              <td><div v-if="!isEditing" class="field-value">{{ localRecord.avgMag || '-' }}</div><input v-else type="text" v-model="localRecord.avgMag" class="edit-select" /></td>
+            </tr>
+            <tr>
+              <td class="labelBack"><span class="labelTitle">2</span></td>
+              <td><div v-if="!isEditing" class="field-value">{{ localRecord.r2 || '-' }}</div><input v-else type="text" v-model="localRecord.r2" class="edit-select" /></td>
+              <td class="labelBack"><span class="labelTitle">Maximum</span></td>
+              <td><div v-if="!isEditing" class="field-value">{{ localRecord.maxMag || '-' }}</div><input v-else type="text" v-model="localRecord.maxMag" class="edit-select" /></td>
+            </tr>
+            <tr>
+              <td class="labelBack"><span class="labelTitle">3</span></td>
+              <td><div v-if="!isEditing" class="field-value">{{ localRecord.r3 || '-' }}</div><input v-else type="text" v-model="localRecord.r3" class="edit-select" /></td>
+              <td class="labelBack"><span class="labelTitle">Max Spec</span></td>
+              <td><div v-if="!isEditing" class="field-value">{{ localRecord.maxSpecMag || '-' }}</div><input v-else type="text" v-model="localRecord.maxSpecMag" class="edit-select" /></td>
+            </tr>
+            <tr>
+              <td class="labelBack"><span class="labelTitle">4</span></td>
+              <td><div v-if="!isEditing" class="field-value">{{ localRecord.r4 || '-' }}</div><input v-else type="text" v-model="localRecord.r4" class="edit-select" /></td>
+              <td class="labelBack"><span class="labelTitle">Trigger Limit</span></td>
+              <td><div v-if="!isEditing" class="field-value">{{ localRecord.triggerLimitMag || '-' }}</div><input v-else type="text" v-model="localRecord.triggerLimitMag" class="edit-select" /></td>
+            </tr>
+            <tr>
+              <td class="labelBack"><span class="labelTitle">5</span></td>
+              <td><div v-if="!isEditing" class="field-value">{{ localRecord.r5 || '-' }}</div><input v-else type="text" v-model="localRecord.r5" class="edit-select" /></td>
+              <td class="labelBack"><span class="labelTitle">Remark</span></td>
+              <td><div v-if="!isEditing" class="field-value">{{ localRecord.remarkMag || '-' }}</div><input v-else type="text" v-model="localRecord.remarkMag" class="edit-select" /></td>
+            </tr>
+            <tr>
+              <td class="labelBack"><span class="labelTitle">Swabbed by (ID No.)</span></td>
+              <td><div v-if="!isEditing" class="field-value">{{ localRecord.swabbedBy || '-' }}</div><input v-else type="text" v-model="localRecord.swabbedBy" class="edit-select" /></td>
+              <td class="labelBack"><span class="labelTitle">Erasure by (ID No.)</span></td>
+              <td><div v-if="!isEditing" class="field-value">{{ localRecord.erasureBy || '-' }}</div><input v-else type="text" v-model="localRecord.erasureBy" class="edit-select" /></td>
+            </tr>
+            <tr>
+              <td class="labelBack"><span class="labelTitle">Verified by (ID No.)</span></td>
+              <td><div v-if="!isEditing" class="field-value">{{ localRecord.verifiedBy || '-' }}</div><input v-else type="text" v-model="localRecord.verifiedBy" class="edit-select" /></td>
+              <td class="labelBack"></td>
+              <td></td>
+            </tr>
           </tbody>
         </table>
-
-        <!-- Batch Number Statistics Sub Panel inside Outgoing Magnet -->
-        <div style="margin-top: 15px; border-top: 1px solid #ccc; padding-top: 10px;">
-          <div style="background-color: #DADADA; padding: 4px 10px; font-weight: bold; font-size: 13px; margin-bottom: 5px;">Batch Number Statistics</div>
-          <div style="overflow-x: auto;">
-            <table class="grid-table" style="width: 100%; border-collapse: collapse;">
-              <thead>
-                <tr style="background-color: #f2f2f2; font-size: 11px;">
-                  <th style="border: 1px solid #ccc; padding: 4px;">Batch Number</th>
-                  <th style="border: 1px solid #ccc; padding: 4px;">Minimum</th>
-                  <th style="border: 1px solid #ccc; padding: 4px;">Average</th>
-                  <th style="border: 1px solid #ccc; padding: 4px;">Maximum</th>
-                  <th style="border: 1px solid #ccc; padding: 4px;">Max Spec</th>
-                  <th style="border: 1px solid #ccc; padding: 4px;">Trigger Limit</th>
-                  <th style="border: 1px solid #ccc; padding: 4px;">Remark</th>
-                  <th style="border: 1px solid #ccc; padding: 4px;">Swabbed by</th>
-                  <th style="border: 1px solid #ccc; padding: 4px;">Erasure by</th>
-                  <th style="border: 1px solid #ccc; padding: 4px;">Verified by</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="b in magnetModelBatches" :key="b.id">
-                  <td style="border: 1px solid #ccc; padding: 4px; text-align: center; font-size: 11px;">{{ b.id }}</td>
-                  <td style="border: 1px solid #ccc; padding: 4px;"><input v-if="isEditing" v-model="b.min" class="grid-input" /><span v-else>{{ b.min }}</span></td>
-                  <td style="border: 1px solid #ccc; padding: 4px;"><input v-if="isEditing" v-model="b.avg" class="grid-input" /><span v-else>{{ b.avg }}</span></td>
-                  <td style="border: 1px solid #ccc; padding: 4px;"><input v-if="isEditing" v-model="b.max" class="grid-input" /><span v-else>{{ b.max }}</span></td>
-                  <td style="border: 1px solid #ccc; padding: 4px;"><input v-if="isEditing" v-model="b.maxSpec" class="grid-input" /><span v-else>{{ b.maxSpec }}</span></td>
-                  <td style="border: 1px solid #ccc; padding: 4px;"><input v-if="isEditing" v-model="b.triggerLimit" class="grid-input" /><span v-else>{{ b.triggerLimit }}</span></td>
-                  <td style="border: 1px solid #ccc; padding: 4px;"><input v-if="isEditing" v-model="b.remark" class="grid-input" /><span v-else>{{ b.remark }}</span></td>
-                  <td style="border: 1px solid #ccc; padding: 4px;"><input v-if="isEditing" v-model="b.swabbedBy" class="grid-input" /><span v-else>{{ b.swabbedBy }}</span></td>
-                  <td style="border: 1px solid #ccc; padding: 4px;"><input v-if="isEditing" v-model="b.erasureBy" class="grid-input" /><span v-else>{{ b.erasureBy }}</span></td>
-                  <td style="border: 1px solid #ccc; padding: 4px;"><input v-if="isEditing" v-model="b.verifiedBy" class="grid-input" /><span v-else>{{ b.verifiedBy }}</span></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
       </fieldset>
 
       <!-- System Information Section -->
