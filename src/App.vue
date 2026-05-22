@@ -25,14 +25,182 @@ const editingRecord = ref(null)
 const editingModule = ref('')
 
 const products = ref([
-  { id: 1, code: 'P000001', type: 'G', selected: false },
-  { id: 2, code: 'P000002', type: 'Non-G', selected: false },
-  { id: 3, code: 'P000003', type: 'G', selected: false },
-  { id: 4, code: 'P000004', type: 'Non-G', selected: false },
-  { id: 5, code: 'P000005', type: 'G', selected: false },
-  { id: 6, code: 'P000006', type: 'Non-G', selected: false },
-  { id: 7, code: 'P000007', type: 'G', selected: false },
-  { id: 8, code: 'P000008', type: 'Non-G', selected: false },
+  { 
+    id: 1, 
+    code: 'P000001', 
+    type: 'G', 
+    modelName: 'M-456',
+    materialCode: 'RM-0012',
+    materialPowderType: 'Type A',
+    materialGrade: 'Grade N52',
+    magneticDirection: 'Axial',
+    marking: 'Laser',
+    bendingStrengthMin: '280',
+    customerWeightMin: '40.5',
+    magnetization: 'MAGNETIZED',
+    productDimension: '24.5',
+    tolerance: '0.05',
+    productWeight: '40.7',
+    customerDwgNo: 'DWG-99482',
+    totalFluxMin: '413',
+    totalFluxMax: '438',
+    brMinCgs: '11.0', ihcMinCgs: '800', bhcMinCgs: '750', bhMaxMinCgs: '30',
+    brMaxCgs: '14.5', ihcMaxCgs: '1200', bhcMaxCgs: '900', bhMaxMaxCgs: '45',
+    brMinSi: '1.1', ihcMinSi: '64', bhcMinSi: '60', bhMaxMinSi: '239',
+    brMaxSi: '1.45', ihcMaxSi: '96', bhcMaxSi: '72', bhMaxMaxSi: '358',
+    selected: false 
+  },
+  { 
+    id: 2, 
+    code: 'P000002', 
+    type: 'Non-G', 
+    modelName: 'M-789',
+    materialCode: 'RM-0015',
+    materialPowderType: 'Type B',
+    materialGrade: 'Grade N45H',
+    magneticDirection: 'Radial',
+    marking: 'Inkjet',
+    bendingStrengthMin: '290',
+    customerWeightMin: '35.2',
+    magnetization: 'UN-MAGNETIZED',
+    productDimension: '15.2',
+    tolerance: '0.03',
+    productWeight: '35.5',
+    customerDwgNo: 'DWG-12345',
+    totalFluxMin: '300',
+    totalFluxMax: '320',
+    brMinCgs: '12.0', ihcMinCgs: '850', bhcMinCgs: '800', bhMaxMinCgs: '32',
+    brMaxCgs: '13.5', ihcMaxCgs: '1100', bhcMaxCgs: '850', bhMaxMaxCgs: '40',
+    brMinSi: '1.2', ihcMinSi: '68', bhcMinSi: '64', bhMaxMinSi: '255',
+    brMaxSi: '1.35', ihcMaxSi: '88', bhcMaxSi: '68', bhMaxMaxSi: '318',
+    selected: false 
+  },
+  { 
+    id: 3, 
+    code: 'P000003', 
+    type: 'G', 
+    modelName: 'M-101',
+    materialCode: 'RM-0018',
+    materialPowderType: 'Type A',
+    materialGrade: 'Grade N52',
+    magneticDirection: 'Axial',
+    marking: 'Laser',
+    bendingStrengthMin: '280',
+    customerWeightMin: '40.5',
+    magnetization: 'MAGNETIZED',
+    productDimension: '24.5',
+    tolerance: '0.05',
+    productWeight: '40.7',
+    customerDwgNo: 'DWG-88888',
+    totalFluxMin: '413',
+    totalFluxMax: '438',
+    selected: false 
+  },
+  { 
+    id: 4, 
+    code: 'P000004', 
+    type: 'Non-G', 
+    modelName: 'M-202',
+    materialCode: 'RM-0020',
+    materialPowderType: 'Type C',
+    materialGrade: 'Grade 30UH',
+    magneticDirection: 'Multipole',
+    marking: 'Engrave',
+    bendingStrengthMin: '300',
+    customerWeightMin: '28.4',
+    magnetization: 'MAGNETIZED',
+    productDimension: '12.4',
+    tolerance: '0.02',
+    productWeight: '28.8',
+    customerDwgNo: 'DWG-54321',
+    totalFluxMin: '250',
+    totalFluxMax: '270',
+    selected: false 
+  },
+  { 
+    id: 5, 
+    code: 'P000005', 
+    type: 'G', 
+    modelName: 'M-303',
+    materialCode: 'RM-0022',
+    materialPowderType: 'Type A',
+    materialGrade: 'Grade N52',
+    magneticDirection: 'Axial',
+    marking: 'Laser',
+    bendingStrengthMin: '280',
+    customerWeightMin: '40.5',
+    magnetization: 'MAGNETIZED',
+    productDimension: '24.5',
+    tolerance: '0.05',
+    productWeight: '40.7',
+    customerDwgNo: 'DWG-99482',
+    totalFluxMin: '413',
+    totalFluxMax: '438',
+    selected: false 
+  },
+  { 
+    id: 6, 
+    code: 'P000006', 
+    type: 'Non-G', 
+    modelName: 'M-404',
+    materialCode: 'RM-0025',
+    materialPowderType: 'Type B',
+    materialGrade: 'Grade 40SH',
+    magneticDirection: 'Radial',
+    marking: 'Laser',
+    bendingStrengthMin: '285',
+    customerWeightMin: '33.1',
+    magnetization: 'UN-MAGNETIZED',
+    productDimension: '18.1',
+    tolerance: '0.04',
+    productWeight: '33.4',
+    customerDwgNo: 'DWG-67890',
+    totalFluxMin: '290',
+    totalFluxMax: '310',
+    selected: false 
+  },
+  { 
+    id: 7, 
+    code: 'P000007', 
+    type: 'G', 
+    modelName: 'M-505',
+    materialCode: 'RM-0028',
+    materialPowderType: 'Type A',
+    materialGrade: 'Grade N52',
+    magneticDirection: 'Axial',
+    marking: 'Laser',
+    bendingStrengthMin: '280',
+    customerWeightMin: '40.5',
+    magnetization: 'MAGNETIZED',
+    productDimension: '24.5',
+    tolerance: '0.05',
+    productWeight: '40.7',
+    customerDwgNo: 'DWG-99482',
+    totalFluxMin: '413',
+    totalFluxMax: '438',
+    selected: false 
+  },
+  { 
+    id: 8, 
+    code: 'P000008', 
+    type: 'Non-G', 
+    modelName: 'M-606',
+    materialCode: 'RM-0030',
+    materialPowderType: 'Type C',
+    materialGrade: 'Grade N38EH',
+    magneticDirection: 'Diametrical',
+    marking: 'Laser',
+    bendingStrengthMin: '295',
+    customerWeightMin: '22.8',
+    magnetization: 'MAGNETIZED',
+    productDimension: '10.8',
+    tolerance: '0.01',
+    productWeight: '23.0',
+    customerDwgNo: 'DWG-24680',
+    totalFluxMin: '180',
+    totalFluxMax: '195',
+    selected: false 
+  }
 ])
 
 const validationRecords = ref([
@@ -484,15 +652,24 @@ const handleOpenEdit = (moduleName, record) => {
 }
 
 const handleSaveEdit = (updated) => {
-  // Find which list to update based on editingModule
+  // Find which list to update based on editingModule or currentModule
   if (editingModule.value === 'erasure') handleSaveErasure(updated)
   else if (editingModule.value === 'magProp') handleSaveMagProp(updated)
   else if (editingModule.value === 'shipmentA') handleSaveShipmentA(updated)
   else if (editingModule.value === 'shipmentB') handleSaveShipmentB(updated)
   else if (editingModule.value === 'reliability') handleSaveReliability(updated)
-  else if (editingModule.value === 'product') {
+  else if (editingModule.value === 'product' || currentModule.value === 'product') {
     const idx = products.value.findIndex(p => p.code === updated.code)
-    if (idx !== -1) products.value[idx] = updated
+    if (idx !== -1) {
+      products.value[idx] = updated
+    } else {
+      products.value.push({
+        ...updated,
+        id: products.value.length + 1,
+        selected: false
+      })
+    }
+    currentView.value = 'list'
   }
   else if (editingModule.value === 'validation') handleSaveValidation(updated)
   else if (editingModule.value === 'inspection') handleSaveInspection(updated)
@@ -754,7 +931,7 @@ const handleOpenShipmentBEdit = (record) => {
           </div>
         </div>
       </div>
-        <ProductView v-else :productCode="selectedProductCode" :isCreating="currentView === 'create'" :isEditing="currentView === 'edit'" @back="backToList" @save="handleSaveEdit" />
+        <ProductView v-else :productCode="selectedProductCode" :product="products.find(p => p.code === selectedProductCode)" :isCreating="currentView === 'create'" :isEditing="currentView === 'edit'" @back="backToList" @save="handleSaveEdit" />
       </template>
     </main>
     
@@ -770,7 +947,7 @@ const handleOpenShipmentBEdit = (record) => {
         <MagneticPropertiesDetailView v-else-if="editingModule === 'magProp'" :record="editingRecord" :isCreating="false" :isEditing="true" :isModal="true" @back="showEditModal = false" @save="handleSaveEdit" />
         <ShipmentTypeADetailView v-else-if="editingModule === 'shipmentA'" :record="editingRecord" :isCreating="false" :isEditing="true" :isModal="true" @back="showEditModal = false" @save="handleSaveEdit" />
         <ShipmentTypeBDetailView v-else-if="editingModule === 'shipmentB'" :record="editingRecord" :isCreating="false" :isEditing="true" :isModal="true" @back="showEditModal = false" @save="handleSaveEdit" />
-        <ProductView v-else-if="editingModule === 'product'" :productCode="editingRecord.code" :isCreating="false" :isEditing="true" :isModal="true" @back="showEditModal = false" @save="handleSaveEdit" />
+        <ProductView v-else-if="editingModule === 'product'" :productCode="editingRecord.code" :product="editingRecord" :isCreating="false" :isEditing="true" :isModal="true" @back="showEditModal = false" @save="handleSaveEdit" />
         <ValidationDetailView v-else-if="editingModule === 'validation'" :record="editingRecord" :isCreating="false" :isEditing="true" :isModal="true" @back="showEditModal = false" @save="handleSaveEdit" />
         <InspectionDetailView v-else-if="editingModule === 'inspection'" :record="editingRecord" :isCreating="false" :isEditing="true" :isModal="true" @back="showEditModal = false" @save="handleSaveEdit" />
         <SamplingLevelDetailView v-else-if="editingModule === 'samplingLevel'" :record="editingRecord" :isCreating="false" :isEditing="true" :isModal="true" @back="showEditModal = false" @save="handleSaveEdit" />

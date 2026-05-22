@@ -1,8 +1,9 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 
 const props = defineProps({
   productCode: String,
+  product: Object,
   isCreating: Boolean,
   isEditing: { type: Boolean, default: false },
   isModal: { type: Boolean, default: false }
@@ -13,22 +14,243 @@ const emit = defineEmits(['back', 'save'])
 const productType = ref('G')
 const typeOptions = ['G', 'Non-G']
 
+// New fields requested by user
+const modelName = ref('M-456')
+const materialCode = ref('RM-0012')
+const materialPowderType = ref('Type A')
+const materialGrade = ref('Grade N52')
+const magneticDirection = ref('Axial')
+const marking = ref('Laser')
+const bendingStrengthMin = ref('280')
+const customerWeightMin = ref('40.5')
+const magnetization = ref('MAGNETIZED')
+const productDimension = ref('24.5')
+const tolerance = ref('0.05')
+const productWeight = ref('40.7')
+const customerDwgNo = ref('DWG-99482')
+const totalFluxMin = ref('413')
+const totalFluxMax = ref('438')
+
+// Magnetic Properties (CGS)
+const brMinCgs = ref('11.0')
+const ihcMinCgs = ref('800')
+const bhcMinCgs = ref('750')
+const bhMaxMinCgs = ref('30')
+const brMaxCgs = ref('14.5')
+const ihcMaxCgs = ref('1200')
+const bhcMaxCgs = ref('900')
+const bhMaxMaxCgs = ref('45')
+
+// Magnetic Properties (SI)
+const brMinSi = ref('1.1')
+const ihcMinSi = ref('64')
+const bhcMinSi = ref('60')
+const bhMaxMinSi = ref('239')
+const brMaxSi = ref('1.45')
+const ihcMaxSi = ref('96')
+const bhcMaxSi = ref('72')
+const bhMaxMaxSi = ref('358')
+
+const magnetizationOptions = ['MAGNETIZED', 'UN-MAGNETIZED']
+
 const isEditing = ref(props.isEditing || props.isCreating)
 const tempProductType = ref(props.isCreating ? '' : productType.value)
 const localProductCode = ref('')
 
+const tempModelName = ref('')
+const tempMaterialCode = ref('')
+const tempMaterialPowderType = ref('')
+const tempMaterialGrade = ref('')
+const tempMagneticDirection = ref('')
+const tempMarking = ref('')
+const tempBendingStrengthMin = ref('')
+const tempCustomerWeightMin = ref('')
+const tempMagnetization = ref('')
+const tempProductDimension = ref('')
+const tempTolerance = ref('')
+const tempProductWeight = ref('')
+const tempCustomerDwgNo = ref('')
+const tempTotalFluxMin = ref('')
+const tempTotalFluxMax = ref('')
+
+const tempBrMinCgs = ref('')
+const tempIhcMinCgs = ref('')
+const tempBhcMinCgs = ref('')
+const tempBhMaxMinCgs = ref('')
+const tempBrMaxCgs = ref('')
+const tempIhcMaxCgs = ref('')
+const tempBhcMaxCgs = ref('')
+const tempBhMaxMaxCgs = ref('')
+
+const tempBrMinSi = ref('')
+const tempIhcMinSi = ref('')
+const tempBhcMinSi = ref('')
+const tempBhMaxMinSi = ref('')
+const tempBrMaxSi = ref('')
+const tempIhcMaxSi = ref('')
+const tempBhcMaxSi = ref('')
+const tempBhMaxMaxSi = ref('')
+
+watch(() => props.product, (newVal) => {
+  if (newVal) {
+    productType.value = newVal.type || 'G'
+    modelName.value = newVal.modelName || 'M-456'
+    materialCode.value = newVal.materialCode || 'RM-0012'
+    materialPowderType.value = newVal.materialPowderType || 'Type A'
+    materialGrade.value = newVal.materialGrade || 'Grade N52'
+    magneticDirection.value = newVal.magneticDirection || 'Axial'
+    marking.value = newVal.marking || 'Laser'
+    bendingStrengthMin.value = newVal.bendingStrengthMin || '280'
+    customerWeightMin.value = newVal.customerWeightMin || '40.5'
+    magnetization.value = newVal.magnetization || 'MAGNETIZED'
+    productDimension.value = newVal.productDimension || '24.5'
+    tolerance.value = newVal.tolerance || '0.05'
+    productWeight.value = newVal.productWeight || '40.7'
+    customerDwgNo.value = newVal.customerDwgNo || 'DWG-99482'
+    totalFluxMin.value = newVal.totalFluxMin || '413'
+    totalFluxMax.value = newVal.totalFluxMax || '438'
+    
+    brMinCgs.value = newVal.brMinCgs || '11.0'
+    ihcMinCgs.value = newVal.ihcMinCgs || '800'
+    bhcMinCgs.value = newVal.bhcMinCgs || '750'
+    bhMaxMinCgs.value = newVal.bhMaxMinCgs || '30'
+    brMaxCgs.value = newVal.brMaxCgs || '14.5'
+    ihcMaxCgs.value = newVal.ihcMaxCgs || '1200'
+    bhcMaxCgs.value = newVal.bhcMaxCgs || '900'
+    bhMaxMaxCgs.value = newVal.bhMaxMaxCgs || '45'
+
+    brMinSi.value = newVal.brMinSi || '1.1'
+    ihcMinSi.value = newVal.ihcMinSi || '64'
+    bhcMinSi.value = newVal.bhcMinSi || '60'
+    bhMaxMinSi.value = newVal.bhMaxMinSi || '239'
+    brMaxSi.value = newVal.brMaxSi || '1.45'
+    ihcMaxSi.value = newVal.ihcMaxSi || '96'
+    bhcMaxSi.value = newVal.bhcMaxSi || '72'
+    bhMaxMaxSi.value = newVal.bhMaxMaxSi || '358'
+  }
+}, { immediate: true })
+
 const startEditing = () => {
   tempProductType.value = productType.value
+  tempModelName.value = modelName.value
+  tempMaterialCode.value = materialCode.value
+  tempMaterialPowderType.value = materialPowderType.value
+  tempMaterialGrade.value = materialGrade.value
+  tempMagneticDirection.value = magneticDirection.value
+  tempMarking.value = marking.value
+  tempBendingStrengthMin.value = bendingStrengthMin.value
+  tempCustomerWeightMin.value = customerWeightMin.value
+  tempMagnetization.value = magnetization.value
+  tempProductDimension.value = productDimension.value
+  tempTolerance.value = tolerance.value
+  tempProductWeight.value = productWeight.value
+  tempCustomerDwgNo.value = customerDwgNo.value
+  tempTotalFluxMin.value = totalFluxMin.value
+  tempTotalFluxMax.value = totalFluxMax.value
+  
+  tempBrMinCgs.value = brMinCgs.value
+  tempIhcMinCgs.value = ihcMinCgs.value
+  tempBhcMinCgs.value = bhcMinCgs.value
+  tempBhMaxMinCgs.value = bhMaxMinCgs.value
+  tempBrMaxCgs.value = brMaxCgs.value
+  tempIhcMaxCgs.value = ihcMaxCgs.value
+  tempBhcMaxCgs.value = bhcMaxCgs.value
+  tempBhMaxMaxCgs.value = bhMaxMaxCgs.value
+
+  tempBrMinSi.value = brMinSi.value
+  tempIhcMinSi.value = ihcMinSi.value
+  tempBhcMinSi.value = bhcMinSi.value
+  tempBhMaxMinSi.value = bhMaxMinSi.value
+  tempBrMaxSi.value = brMaxSi.value
+  tempIhcMaxSi.value = ihcMaxSi.value
+  tempBhcMaxSi.value = bhcMaxSi.value
+  tempBhMaxMaxSi.value = bhMaxMaxSi.value
+
   isEditing.value = true
 }
 
 const saveProduct = () => {
   productType.value = tempProductType.value
+  modelName.value = tempModelName.value
+  materialCode.value = tempMaterialCode.value
+  materialPowderType.value = tempMaterialPowderType.value
+  materialGrade.value = tempMaterialGrade.value
+  magneticDirection.value = tempMagneticDirection.value
+  marking.value = tempMarking.value
+  bendingStrengthMin.value = tempBendingStrengthMin.value
+  customerWeightMin.value = tempCustomerWeightMin.value
+  magnetization.value = tempMagnetization.value
+  productDimension.value = tempProductDimension.value
+  tolerance.value = tempTolerance.value
+  productWeight.value = tempProductWeight.value
+  customerDwgNo.value = tempCustomerDwgNo.value
+  totalFluxMin.value = tempTotalFluxMin.value
+  totalFluxMax.value = tempTotalFluxMax.value
+  
+  brMinCgs.value = tempBrMinCgs.value
+  ihcMinCgs.value = tempIhcMinCgs.value
+  bhcMinCgs.value = tempBhcMinCgs.value
+  bhMaxMinCgs.value = tempBhMaxMinCgs.value
+  brMaxCgs.value = tempBrMaxCgs.value
+  ihcMaxCgs.value = tempIhcMaxCgs.value
+  bhcMaxCgs.value = tempBhcMaxCgs.value
+  bhMaxMaxCgs.value = tempBhMaxMaxCgs.value
+
+  brMinSi.value = tempBrMinSi.value
+  ihcMinSi.value = tempIhcMinSi.value
+  bhcMinSi.value = tempBhcMinSi.value
+  bhMaxMinSi.value = tempBhMaxMinSi.value
+  brMaxSi.value = tempBrMaxSi.value
+  ihcMaxSi.value = tempIhcMaxSi.value
+  bhcMaxSi.value = tempBhcMaxSi.value
+  bhMaxMaxSi.value = tempBhMaxMaxSi.value
+
   isEditing.value = false
+
+  emit('save', {
+    ...(props.product || {}),
+    code: props.isCreating ? localProductCode.value : props.productCode,
+    type: productType.value,
+    modelName: modelName.value,
+    materialCode: materialCode.value,
+    materialPowderType: materialPowderType.value,
+    materialGrade: materialGrade.value,
+    magneticDirection: magneticDirection.value,
+    marking: marking.value,
+    bendingStrengthMin: bendingStrengthMin.value,
+    customerWeightMin: customerWeightMin.value,
+    magnetization: magnetization.value,
+    productDimension: productDimension.value,
+    tolerance: tolerance.value,
+    productWeight: productWeight.value,
+    customerDwgNo: customerDwgNo.value,
+    totalFluxMin: totalFluxMin.value,
+    totalFluxMax: totalFluxMax.value,
+    brMinCgs: brMinCgs.value,
+    ihcMinCgs: ihcMinCgs.value,
+    bhcMinCgs: bhcMinCgs.value,
+    bhMaxMinCgs: bhMaxMinCgs.value,
+    brMaxCgs: brMaxCgs.value,
+    ihcMaxCgs: ihcMaxCgs.value,
+    bhcMaxCgs: bhcMaxCgs.value,
+    bhMaxMaxCgs: bhMaxMaxCgs.value,
+    brMinSi: brMinSi.value,
+    ihcMinSi: ihcMinSi.value,
+    bhcMinSi: bhcMinSi.value,
+    bhMaxMinSi: bhMaxMinSi.value,
+    brMaxSi: brMaxSi.value,
+    ihcMaxSi: ihcMaxSi.value,
+    bhcMaxSi: bhcMaxSi.value,
+    bhMaxMaxSi: bhMaxMaxSi.value
+  })
 }
 
 const cancelProductEdit = () => {
-  isEditing.value = false
+  if (props.isCreating) {
+    emit('back')
+  } else {
+    isEditing.value = false
+  }
 }
 
 const dimensions = ref([
@@ -241,6 +463,245 @@ const goBack = () => {
                   <select v-else v-model="tempProductType" class="form-select" style="width: 80.4%; height: 22px;">
                     <option v-for="opt in typeOptions" :key="opt" :value="opt">{{ opt }}</option>
                   </select>
+                </td>
+              </tr>
+              <tr>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;">
+                  <span class="labelTitle">Model Name</span>
+                </td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ modelName }}</div>
+                  <input v-else type="text" v-model="tempModelName" class="edit-select" />
+                </td>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;">
+                  <span class="labelTitle">Material Code/ RM</span>
+                </td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ materialCode }}</div>
+                  <input v-else type="text" v-model="tempMaterialCode" class="edit-select" />
+                </td>
+              </tr>
+              <tr>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;">
+                  <span class="labelTitle">Material Powder Type</span>
+                </td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ materialPowderType }}</div>
+                  <input v-else type="text" v-model="tempMaterialPowderType" class="edit-select" />
+                </td>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;">
+                  <span class="labelTitle">Material Grade</span>
+                </td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ materialGrade }}</div>
+                  <input v-else type="text" v-model="tempMaterialGrade" class="edit-select" />
+                </td>
+              </tr>
+              <tr>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;">
+                  <span class="labelTitle">Magnetic Direction</span>
+                </td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ magneticDirection }}</div>
+                  <input v-else type="text" v-model="tempMagneticDirection" class="edit-select" />
+                </td>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;">
+                  <span class="labelTitle">Marking</span>
+                </td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ marking }}</div>
+                  <input v-else type="text" v-model="tempMarking" class="edit-select" />
+                </td>
+              </tr>
+              <tr>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;">
+                  <span class="labelTitle">Bending Strength (Min)</span>
+                </td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ bendingStrengthMin }}</div>
+                  <input v-else type="text" v-model="tempBendingStrengthMin" class="edit-select" />
+                </td>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;">
+                  <span class="labelTitle">Customer Weight (Min)</span>
+                </td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ customerWeightMin }}</div>
+                  <input v-else type="text" v-model="tempCustomerWeightMin" class="edit-select" />
+                </td>
+              </tr>
+              <tr>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;">
+                  <span class="labelTitle">Magnetization</span>
+                </td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ magnetization }}</div>
+                  <select v-else v-model="tempMagnetization" class="form-select" style="width: 80.4%; height: 22px;">
+                    <option v-for="opt in magnetizationOptions" :key="opt" :value="opt">{{ opt }}</option>
+                  </select>
+                </td>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;">
+                  <span class="labelTitle">Product Dimension</span>
+                </td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ productDimension }}</div>
+                  <input v-else type="text" v-model="tempProductDimension" class="edit-select" />
+                </td>
+              </tr>
+              <tr>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;">
+                  <span class="labelTitle">Tolerance</span>
+                </td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ tolerance }}</div>
+                  <input v-else type="text" v-model="tempTolerance" class="edit-select" />
+                </td>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;">
+                  <span class="labelTitle">Product Weight</span>
+                </td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ productWeight }}</div>
+                  <input v-else type="text" v-model="tempProductWeight" class="edit-select" />
+                </td>
+              </tr>
+              <tr>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;">
+                  <span class="labelTitle">Customer's Dwg No./ Part No.</span>
+                </td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ customerDwgNo }}</div>
+                  <input v-else type="text" v-model="tempCustomerDwgNo" class="edit-select" />
+                </td>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;">
+                  <span class="labelTitle">Total Flux (Min)</span>
+                </td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ totalFluxMin }}</div>
+                  <input v-else type="text" v-model="tempTotalFluxMin" class="edit-select" />
+                </td>
+              </tr>
+              <tr>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;">
+                  <span class="labelTitle">Total Flux (Max)</span>
+                </td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ totalFluxMax }}</div>
+                  <input v-else type="text" v-model="tempTotalFluxMax" class="edit-select" />
+                </td>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;"></td>
+                <td style="width: 33.3333%; height: 21px;"></td>
+              </tr>
+            </tbody>
+          </table>
+        </fieldset>
+
+        <!-- Magnetic Properties (CGS) Section -->
+        <fieldset class="fsMargin">
+          <legend><b>Magnetic Properties (CGS)</b></legend>
+          <table border="0" style="width: 100%; table-layout: fixed;">
+            <tbody>
+              <tr>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">BR (Min)</span></td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ brMinCgs }}</div>
+                  <input v-else type="text" v-model="tempBrMinCgs" class="edit-select" />
+                </td>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">IHC (Min)</span></td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ ihcMinCgs }}</div>
+                  <input v-else type="text" v-model="tempIhcMinCgs" class="edit-select" />
+                </td>
+              </tr>
+              <tr>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">BHC (Min)</span></td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ bhcMinCgs }}</div>
+                  <input v-else type="text" v-model="tempBhcMinCgs" class="edit-select" />
+                </td>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">BHMax (Min)</span></td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ bhMaxMinCgs }}</div>
+                  <input v-else type="text" v-model="tempBhMaxMinCgs" class="edit-select" />
+                </td>
+              </tr>
+              <tr>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">BR (Max)</span></td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ brMaxCgs }}</div>
+                  <input v-else type="text" v-model="tempBrMaxCgs" class="edit-select" />
+                </td>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">IHC (Max)</span></td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ ihcMaxCgs }}</div>
+                  <input v-else type="text" v-model="tempIhcMaxCgs" class="edit-select" />
+                </td>
+              </tr>
+              <tr>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">BHC (Max)</span></td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ bhcMaxCgs }}</div>
+                  <input v-else type="text" v-model="tempBhcMaxCgs" class="edit-select" />
+                </td>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">BHMax (Max)</span></td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ bhMaxMaxCgs }}</div>
+                  <input v-else type="text" v-model="tempBhMaxMaxCgs" class="edit-select" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </fieldset>
+
+        <!-- Magnetic Properties (SI) Section -->
+        <fieldset class="fsMargin">
+          <legend><b>Magnetic Properties (SI)</b></legend>
+          <table border="0" style="width: 100%; table-layout: fixed;">
+            <tbody>
+              <tr>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">BR (Min)</span></td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ brMinSi }}</div>
+                  <input v-else type="text" v-model="tempBrMinSi" class="edit-select" />
+                </td>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">IHC (Min)</span></td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ ihcMinSi }}</div>
+                  <input v-else type="text" v-model="tempIhcMinSi" class="edit-select" />
+                </td>
+              </tr>
+              <tr>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">BHC (Min)</span></td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ bhcMinSi }}</div>
+                  <input v-else type="text" v-model="tempBhcMinSi" class="edit-select" />
+                </td>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">BHMax (Min)</span></td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ bhMaxMinSi }}</div>
+                  <input v-else type="text" v-model="tempBhMaxMinSi" class="edit-select" />
+                </td>
+              </tr>
+              <tr>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">BR (Max)</span></td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ brMaxSi }}</div>
+                  <input v-else type="text" v-model="tempBrMaxSi" class="edit-select" />
+                </td>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">IHC (Max)</span></td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ ihcMaxSi }}</div>
+                  <input v-else type="text" v-model="tempIhcMaxSi" class="edit-select" />
+                </td>
+              </tr>
+              <tr>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">BHC (Max)</span></td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ bhcMaxSi }}</div>
+                  <input v-else type="text" v-model="tempBhcMaxSi" class="edit-select" />
+                </td>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">BHMax (Max)</span></td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ bhMaxMaxSi }}</div>
+                  <input v-else type="text" v-model="tempBhMaxMaxSi" class="edit-select" />
                 </td>
               </tr>
             </tbody>
