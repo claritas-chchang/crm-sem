@@ -23,6 +23,7 @@ const magneticDirection = ref('Axial')
 const marking = ref('Laser')
 const bendingStrengthMin = ref('280')
 const customerWeightMin = ref('40.5')
+const customerWeightMinSpec = ref('40.6')
 const magnetization = ref('MAGNETIZED')
 const productDimension = ref('24.5')
 const tolerance = ref('0.05')
@@ -65,6 +66,7 @@ const tempMagneticDirection = ref('')
 const tempMarking = ref('')
 const tempBendingStrengthMin = ref('')
 const tempCustomerWeightMin = ref('')
+const tempCustomerWeightMinSpec = ref('')
 const tempMagnetization = ref('')
 const tempProductDimension = ref('')
 const tempTolerance = ref('')
@@ -102,6 +104,7 @@ watch(() => props.product, (newVal) => {
     marking.value = newVal.marking || 'Laser'
     bendingStrengthMin.value = newVal.bendingStrengthMin || '280'
     customerWeightMin.value = newVal.customerWeightMin || '40.5'
+    customerWeightMinSpec.value = newVal.customerWeightMinSpec || '40.6'
     magnetization.value = newVal.magnetization || 'MAGNETIZED'
     productDimension.value = newVal.productDimension || '24.5'
     tolerance.value = newVal.tolerance || '0.05'
@@ -140,6 +143,7 @@ const startEditing = () => {
   tempMarking.value = marking.value
   tempBendingStrengthMin.value = bendingStrengthMin.value
   tempCustomerWeightMin.value = customerWeightMin.value
+  tempCustomerWeightMinSpec.value = customerWeightMinSpec.value
   tempMagnetization.value = magnetization.value
   tempProductDimension.value = productDimension.value
   tempTolerance.value = tolerance.value
@@ -179,6 +183,7 @@ const saveProduct = () => {
   marking.value = tempMarking.value
   bendingStrengthMin.value = tempBendingStrengthMin.value
   customerWeightMin.value = tempCustomerWeightMin.value
+  customerWeightMinSpec.value = tempCustomerWeightMinSpec.value
   magnetization.value = tempMagnetization.value
   productDimension.value = tempProductDimension.value
   tolerance.value = tempTolerance.value
@@ -219,6 +224,7 @@ const saveProduct = () => {
     marking: marking.value,
     bendingStrengthMin: bendingStrengthMin.value,
     customerWeightMin: customerWeightMin.value,
+    customerWeightMinSpec: customerWeightMinSpec.value,
     magnetization: magnetization.value,
     productDimension: productDimension.value,
     tolerance: tolerance.value,
@@ -449,7 +455,7 @@ const goBack = () => {
             <tbody>
               <tr>
                 <td class="labelBack" style="width: 16.6667%; height: 20px;">
-                  <span class="labelTitle">Product ID/Code</span>
+                  <span class="labelTitle">Product Code</span>
                 </td>
                 <td style="width: 33.3333%; height: 21px;">
                   <div v-if="!isCreating" class="field-value">{{ productCode }}</div>
@@ -474,63 +480,6 @@ const goBack = () => {
                   <input v-else type="text" v-model="tempModelName" class="edit-select" />
                 </td>
                 <td class="labelBack" style="width: 16.6667%; height: 20px;">
-                  <span class="labelTitle">Material Code/ RM</span>
-                </td>
-                <td style="width: 33.3333%; height: 21px;">
-                  <div v-if="!isEditing" class="field-value">{{ materialCode }}</div>
-                  <input v-else type="text" v-model="tempMaterialCode" class="edit-select" />
-                </td>
-              </tr>
-              <tr>
-                <td class="labelBack" style="width: 16.6667%; height: 20px;">
-                  <span class="labelTitle">Material Powder Type</span>
-                </td>
-                <td style="width: 33.3333%; height: 21px;">
-                  <div v-if="!isEditing" class="field-value">{{ materialPowderType }}</div>
-                  <input v-else type="text" v-model="tempMaterialPowderType" class="edit-select" />
-                </td>
-                <td class="labelBack" style="width: 16.6667%; height: 20px;">
-                  <span class="labelTitle">Material Grade</span>
-                </td>
-                <td style="width: 33.3333%; height: 21px;">
-                  <div v-if="!isEditing" class="field-value">{{ materialGrade }}</div>
-                  <input v-else type="text" v-model="tempMaterialGrade" class="edit-select" />
-                </td>
-              </tr>
-              <tr>
-                <td class="labelBack" style="width: 16.6667%; height: 20px;">
-                  <span class="labelTitle">Magnetic Direction</span>
-                </td>
-                <td style="width: 33.3333%; height: 21px;">
-                  <div v-if="!isEditing" class="field-value">{{ magneticDirection }}</div>
-                  <input v-else type="text" v-model="tempMagneticDirection" class="edit-select" />
-                </td>
-                <td class="labelBack" style="width: 16.6667%; height: 20px;">
-                  <span class="labelTitle">Marking</span>
-                </td>
-                <td style="width: 33.3333%; height: 21px;">
-                  <div v-if="!isEditing" class="field-value">{{ marking }}</div>
-                  <input v-else type="text" v-model="tempMarking" class="edit-select" />
-                </td>
-              </tr>
-              <tr>
-                <td class="labelBack" style="width: 16.6667%; height: 20px;">
-                  <span class="labelTitle">Bending Strength (Min)</span>
-                </td>
-                <td style="width: 33.3333%; height: 21px;">
-                  <div v-if="!isEditing" class="field-value">{{ bendingStrengthMin }}</div>
-                  <input v-else type="text" v-model="tempBendingStrengthMin" class="edit-select" />
-                </td>
-                <td class="labelBack" style="width: 16.6667%; height: 20px;">
-                  <span class="labelTitle">Customer Weight (Min)</span>
-                </td>
-                <td style="width: 33.3333%; height: 21px;">
-                  <div v-if="!isEditing" class="field-value">{{ customerWeightMin }}</div>
-                  <input v-else type="text" v-model="tempCustomerWeightMin" class="edit-select" />
-                </td>
-              </tr>
-              <tr>
-                <td class="labelBack" style="width: 16.6667%; height: 20px;">
                   <span class="labelTitle">Magnetization</span>
                 </td>
                 <td style="width: 33.3333%; height: 21px;">
@@ -538,6 +487,15 @@ const goBack = () => {
                   <select v-else v-model="tempMagnetization" class="form-select" style="width: 80.4%; height: 22px;">
                     <option v-for="opt in magnetizationOptions" :key="opt" :value="opt">{{ opt }}</option>
                   </select>
+                </td>
+              </tr>
+              <tr>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;">
+                  <span class="labelTitle">Material Code/ RM</span>
+                </td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ materialCode }}</div>
+                  <input v-else type="text" v-model="tempMaterialCode" class="edit-select" />
                 </td>
                 <td class="labelBack" style="width: 16.6667%; height: 20px;">
                   <span class="labelTitle">Product Dimension</span>
@@ -549,11 +507,27 @@ const goBack = () => {
               </tr>
               <tr>
                 <td class="labelBack" style="width: 16.6667%; height: 20px;">
+                  <span class="labelTitle">Material Powder Type</span>
+                </td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ materialPowderType }}</div>
+                  <input v-else type="text" v-model="tempMaterialPowderType" class="edit-select" />
+                </td>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;">
                   <span class="labelTitle">Tolerance</span>
                 </td>
                 <td style="width: 33.3333%; height: 21px;">
                   <div v-if="!isEditing" class="field-value">{{ tolerance }}</div>
                   <input v-else type="text" v-model="tempTolerance" class="edit-select" />
+                </td>
+              </tr>
+              <tr>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;">
+                  <span class="labelTitle">Material Grade</span>
+                </td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ materialGrade }}</div>
+                  <input v-else type="text" v-model="tempMaterialGrade" class="edit-select" />
                 </td>
                 <td class="labelBack" style="width: 16.6667%; height: 20px;">
                   <span class="labelTitle">Product Weight</span>
@@ -565,11 +539,43 @@ const goBack = () => {
               </tr>
               <tr>
                 <td class="labelBack" style="width: 16.6667%; height: 20px;">
+                  <span class="labelTitle">Magnetic Direction</span>
+                </td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ magneticDirection }}</div>
+                  <input v-else type="text" v-model="tempMagneticDirection" class="edit-select" />
+                </td>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;">
+                  <span class="labelTitle">Customer Weight (Min Spec)</span>
+                </td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ customerWeightMinSpec }}</div>
+                  <input v-else type="text" v-model="tempCustomerWeightMinSpec" class="edit-select" />
+                </td>
+              </tr>
+              <tr>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;">
+                  <span class="labelTitle">Marking</span>
+                </td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ marking }}</div>
+                  <input v-else type="text" v-model="tempMarking" class="edit-select" />
+                </td>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;">
                   <span class="labelTitle">Customer's Dwg No./ Part No.</span>
                 </td>
                 <td style="width: 33.3333%; height: 21px;">
                   <div v-if="!isEditing" class="field-value">{{ customerDwgNo }}</div>
                   <input v-else type="text" v-model="tempCustomerDwgNo" class="edit-select" />
+                </td>
+              </tr>
+              <tr>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;">
+                  <span class="labelTitle">Bending Strength (Min)</span>
+                </td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ bendingStrengthMin }}</div>
+                  <input v-else type="text" v-model="tempBendingStrengthMin" class="edit-select" />
                 </td>
                 <td class="labelBack" style="width: 16.6667%; height: 20px;">
                   <span class="labelTitle">Total Flux (Min)</span>
@@ -581,14 +587,19 @@ const goBack = () => {
               </tr>
               <tr>
                 <td class="labelBack" style="width: 16.6667%; height: 20px;">
+                  <span class="labelTitle">Customer Weight (Min)</span>
+                </td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ customerWeightMin }}</div>
+                  <input v-else type="text" v-model="tempCustomerWeightMin" class="edit-select" />
+                </td>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;">
                   <span class="labelTitle">Total Flux (Max)</span>
                 </td>
                 <td style="width: 33.3333%; height: 21px;">
                   <div v-if="!isEditing" class="field-value">{{ totalFluxMax }}</div>
                   <input v-else type="text" v-model="tempTotalFluxMax" class="edit-select" />
                 </td>
-                <td class="labelBack" style="width: 16.6667%; height: 20px;"></td>
-                <td style="width: 33.3333%; height: 21px;"></td>
               </tr>
             </tbody>
           </table>
@@ -605,29 +616,18 @@ const goBack = () => {
                   <div v-if="!isEditing" class="field-value">{{ brMinCgs }}</div>
                   <input v-else type="text" v-model="tempBrMinCgs" class="edit-select" />
                 </td>
-                <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">IHC (Min)</span></td>
-                <td style="width: 33.3333%; height: 21px;">
-                  <div v-if="!isEditing" class="field-value">{{ ihcMinCgs }}</div>
-                  <input v-else type="text" v-model="tempIhcMinCgs" class="edit-select" />
-                </td>
-              </tr>
-              <tr>
-                <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">BHC (Min)</span></td>
-                <td style="width: 33.3333%; height: 21px;">
-                  <div v-if="!isEditing" class="field-value">{{ bhcMinCgs }}</div>
-                  <input v-else type="text" v-model="tempBhcMinCgs" class="edit-select" />
-                </td>
-                <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">BHMax (Min)</span></td>
-                <td style="width: 33.3333%; height: 21px;">
-                  <div v-if="!isEditing" class="field-value">{{ bhMaxMinCgs }}</div>
-                  <input v-else type="text" v-model="tempBhMaxMinCgs" class="edit-select" />
-                </td>
-              </tr>
-              <tr>
                 <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">BR (Max)</span></td>
                 <td style="width: 33.3333%; height: 21px;">
                   <div v-if="!isEditing" class="field-value">{{ brMaxCgs }}</div>
                   <input v-else type="text" v-model="tempBrMaxCgs" class="edit-select" />
+                </td>
+                
+              </tr>
+              <tr>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">IHC (Min)</span></td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ ihcMinCgs }}</div>
+                  <input v-else type="text" v-model="tempIhcMinCgs" class="edit-select" />
                 </td>
                 <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">IHC (Max)</span></td>
                 <td style="width: 33.3333%; height: 21px;">
@@ -636,10 +636,22 @@ const goBack = () => {
                 </td>
               </tr>
               <tr>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">BHC (Min)</span></td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ bhcMinCgs }}</div>
+                  <input v-else type="text" v-model="tempBhcMinCgs" class="edit-select" />
+                </td>
                 <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">BHC (Max)</span></td>
                 <td style="width: 33.3333%; height: 21px;">
                   <div v-if="!isEditing" class="field-value">{{ bhcMaxCgs }}</div>
                   <input v-else type="text" v-model="tempBhcMaxCgs" class="edit-select" />
+                </td>
+              </tr>
+              <tr>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">BHMax (Min)</span></td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ bhMaxMinCgs }}</div>
+                  <input v-else type="text" v-model="tempBhMaxMinCgs" class="edit-select" />
                 </td>
                 <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">BHMax (Max)</span></td>
                 <td style="width: 33.3333%; height: 21px;">
@@ -662,29 +674,18 @@ const goBack = () => {
                   <div v-if="!isEditing" class="field-value">{{ brMinSi }}</div>
                   <input v-else type="text" v-model="tempBrMinSi" class="edit-select" />
                 </td>
-                <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">IHC (Min)</span></td>
-                <td style="width: 33.3333%; height: 21px;">
-                  <div v-if="!isEditing" class="field-value">{{ ihcMinSi }}</div>
-                  <input v-else type="text" v-model="tempIhcMinSi" class="edit-select" />
-                </td>
-              </tr>
-              <tr>
-                <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">BHC (Min)</span></td>
-                <td style="width: 33.3333%; height: 21px;">
-                  <div v-if="!isEditing" class="field-value">{{ bhcMinSi }}</div>
-                  <input v-else type="text" v-model="tempBhcMinSi" class="edit-select" />
-                </td>
-                <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">BHMax (Min)</span></td>
-                <td style="width: 33.3333%; height: 21px;">
-                  <div v-if="!isEditing" class="field-value">{{ bhMaxMinSi }}</div>
-                  <input v-else type="text" v-model="tempBhMaxMinSi" class="edit-select" />
-                </td>
-              </tr>
-              <tr>
                 <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">BR (Max)</span></td>
                 <td style="width: 33.3333%; height: 21px;">
                   <div v-if="!isEditing" class="field-value">{{ brMaxSi }}</div>
                   <input v-else type="text" v-model="tempBrMaxSi" class="edit-select" />
+                </td>
+                
+              </tr>
+              <tr>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">IHC (Min)</span></td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ ihcMinSi }}</div>
+                  <input v-else type="text" v-model="tempIhcMinSi" class="edit-select" />
                 </td>
                 <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">IHC (Max)</span></td>
                 <td style="width: 33.3333%; height: 21px;">
@@ -693,10 +694,22 @@ const goBack = () => {
                 </td>
               </tr>
               <tr>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">BHC (Min)</span></td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ bhcMinSi }}</div>
+                  <input v-else type="text" v-model="tempBhcMinSi" class="edit-select" />
+                </td>
                 <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">BHC (Max)</span></td>
                 <td style="width: 33.3333%; height: 21px;">
                   <div v-if="!isEditing" class="field-value">{{ bhcMaxSi }}</div>
                   <input v-else type="text" v-model="tempBhcMaxSi" class="edit-select" />
+                </td>
+              </tr>
+              <tr>
+                <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">BHMax (Min)</span></td>
+                <td style="width: 33.3333%; height: 21px;">
+                  <div v-if="!isEditing" class="field-value">{{ bhMaxMinSi }}</div>
+                  <input v-else type="text" v-model="tempBhMaxMinSi" class="edit-select" />
                 </td>
                 <td class="labelBack" style="width: 16.6667%; height: 20px;"><span class="labelTitle">BHMax (Max)</span></td>
                 <td style="width: 33.3333%; height: 21px;">

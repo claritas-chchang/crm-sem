@@ -18,7 +18,7 @@ const internalRecords = computed(() => props.records || [])
 const filterOptions = [
   { value: '', label: '--Please Select One--' },
   { value: 'name', label: 'Sampling Name' },
-  { value: 'type', label: 'Type' },
+  { value: 'measurementPoint', label: 'Measurement Point' },
 ]
 
 const selectedFilter = ref('')
@@ -92,14 +92,7 @@ const handleSave = (updated) => {
                 <th class="col-checkbox"><input type="checkbox" v-model="selectAll" @change="toggleSelectAll" /></th>
                 <th class="col-icon"></th>
                 <th>Sampling Name</th>
-                <th>Type</th>
-                <th>Qty</th>
-                <th>Sampling Size</th>
-                <th>Rank 1 Size</th>
-                <th>Rank 2 Size</th>
-                <th>Rank 3 Size</th>
-                <th>Rank 4 Size</th>
-                <th>Rank 5 Size</th>
+                <th>Measurement Point</th>
                 <th>Created Date</th>
                 <th>Created By</th>
                 <th>Last Updated Date</th>
@@ -119,21 +112,14 @@ const handleSave = (updated) => {
                   </svg>
                 </td>
                 <td><a href="#" class="item-link" @click.prevent="openDetail(record)">{{ record.name }}</a></td>
-                <td>{{ record.type }}</td>
-                <td>{{ record.qty }}</td>
-                <td>{{ record.sSize }}</td>
-                <td>{{ record.r1 }}</td>
-                <td>{{ record.r2 }}</td>
-                <td>{{ record.r3 }}</td>
-                <td>{{ record.r4 }}</td>
-                <td>{{ record.r5 }}</td>
+                <td>{{ record.measurementPoint }}</td>
                 <td>{{ record.creationDate }}</td>
                 <td>{{ record.createdBy }}</td>
                 <td>{{ record.updatedDate }}</td>
                 <td>{{ record.updatedBy }}</td>
               </tr>
               <tr v-if="filteredRecords.length === 0">
-                <td colspan="15" style="text-align: center; padding: 20px; color: #666;">No sampling level records found.</td>
+                <td colspan="8" style="text-align: center; padding: 20px; color: #666;">No sampling level records found.</td>
               </tr>
             </tbody>
           </table>

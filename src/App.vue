@@ -27,18 +27,18 @@ const editingModule = ref('')
 const products = ref([
   { 
     id: 1, 
-    code: 'P000001', 
+    code: '383257', 
     type: 'G', 
-    modelName: 'M-456',
-    materialCode: 'RM-0012',
-    materialPowderType: 'Type A',
-    materialGrade: 'Grade N52',
-    magneticDirection: 'Axial',
-    marking: 'Laser',
+    modelName: 'ACT-0257N',
+    materialCode: '385025',
+    materialPowderType: 'FPQ',
+    materialGrade: 'N49H',
+    magneticDirection: 'Pick List',
+    marking: 'Y/N',
     bendingStrengthMin: '280',
     customerWeightMin: '40.5',
     magnetization: 'MAGNETIZED',
-    productDimension: '24.5',
+    productDimension: '6.60 L * 2.10 W * 1.40 T',
     tolerance: '0.05',
     productWeight: '40.7',
     customerDwgNo: 'DWG-99482',
@@ -258,19 +258,19 @@ const selectedInspectionRecord = ref(null)
 
 const samplingLevelRecords = ref([
  { 
-    id: 1, name: 'I, AQL 1% (normal)', type: 'Normal', qty: '500', sSize: '5', r1: '5', r2: '5', r3: '15', r4: '15', r5: '15', selected: false,
+    id: 1, name: 'I, AQL 1% (normal)', measurementPoint: '1', selected: false,
     creationDate: '16-March-2026 12:58:05 PM', createdBy: 'qa-admin-p2', updatedDate: '16-March-2026 12:59:47 PM', updatedBy: 'qa-tech-p2' 
  },
  { 
-    id: 2, name: 'II, AQL 0.65% (normal)', type: 'Normal', qty: '1200', sSize: '8', r1: '8', r2: '8', r3: '20', r4: '20', r5: '20', selected: false,
+    id: 2, name: 'II, AQL 0.65% (normal)', measurementPoint: '2', selected: false,
     creationDate: '17-March-2026 09:30:00 AM', createdBy: 'qa-admin-p2', updatedDate: '17-March-2026 10:15:22 AM', updatedBy: 'qa-tech-p2' 
  },
  { 
-    id: 3, name: 'III, AQL 2.5% (tightened)', type: 'Tightened', qty: '2500', sSize: '13', r1: '13', r2: '13', r3: '32', r4: '32', r5: '32', selected: false,
+    id: 3, name: 'III, AQL 2.5% (tightened)', measurementPoint: '3', selected: false,
     creationDate: '18-March-2026 02:00:15 PM', createdBy: 'qa-admin-p2', updatedDate: '18-March-2026 02:45:10 PM', updatedBy: 'qa-tech-p2' 
  },
  { 
-    id: 4, name: 'S-3, AQL 4.0% (reduced)', type: 'Reduced', qty: '3500', sSize: '20', r1: '20', r2: '20', r3: '50', r4: '50', r5: '50', selected: false,
+    id: 4, name: 'S-3, AQL 4.0% (reduced)', measurementPoint: '5', selected: false,
     creationDate: '19-March-2026 11:20:45 AM', createdBy: 'qa-admin-p2', updatedDate: '19-March-2026 11:55:30 AM', updatedBy: 'qa-tech-p2' 
  }
 ])
