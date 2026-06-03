@@ -378,7 +378,7 @@ const nextMonth = () => {
         <table border="0" style="width: 100%; table-layout: fixed;">
           <tbody>
             <tr>
-              <td class="labelBack" style="width: 16%;"><span class="labelTitle">Permission Error/Tolerance</span></td>
+              <td class="labelBack" style="width: 16%;"><span class="labelTitle"> Error/Tolerance</span></td>
               <td style="width: 34%;"><div v-if="!isEditing" class="field-value">{{ localRecord.permError || '-' }}</div><input v-else type="text" v-model="localRecord.permError" class="edit-select" /></td>
               <td class="labelBack" style="width: 16%;"><span class="labelTitle">GP</span></td>
               <td style="width: 34%;"><div v-if="!isEditing" class="field-value">{{ localRecord.gpVal || '-0.002mm' }}</div><input v-else type="text" v-model="localRecord.gpVal" class="edit-select" /></td>
