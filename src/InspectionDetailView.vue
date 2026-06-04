@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, onMounted, onUnmounted } from 'vue'
+import { ref, watch } from 'vue'
 import EditModal from './EditModal.vue'
 
 const props = defineProps({
@@ -44,33 +44,7 @@ const goBack = () => {
   emit('back')
 }
 
-// Sub-panel 1: Product Dimension List logic
-const isDimensionListOpen = ref(true)
-const toggleDimensionList = () => {
-  isDimensionListOpen.value = !isDimensionListOpen.value
-}
-
-const dimensions = ref([
-  { name: 'Length', min: '24.47', max: '24.55', size: '24.5', uom: 'mm', minTol: '0.03', maxTol: '0.05', minOnly: 'No', maxOnly: 'No', eq: 'Micrometer', sampSize: '-', remarks: '' },
-  { name: 'Width', min: '24.45', max: '24.55', size: '24.5', uom: 'mm', minTol: '', maxTol: '0.05', minOnly: 'No', maxOnly: 'No', eq: 'Micrometer', sampSize: '-', remarks: '' },
-  { name: 'Thickness', min: '8.85', max: '8.95', size: '8.9', uom: 'mm', minTol: '', maxTol: '0.05', minOnly: 'No', maxOnly: 'No', eq: 'Micrometer', sampSize: '-', remarks: '' },
-  { name: 'Flatness', min: '-', max: '0.08', size: '0.08', uom: 'mm', minTol: '-', maxTol: '0', minOnly: 'No', maxOnly: 'Yes', eq: 'Linear gage', sampSize: '-', remarks: '' },
-  { name: 'Parallelism', min: '-', max: '0.08', size: '0.08', uom: 'mm', minTol: '-', maxTol: '0', minOnly: 'No', maxOnly: 'Yes', eq: 'Linear gage', sampSize: '-', remarks: '' },
-  { name: 'Perpendicularity', min: '-', max: '0.08', size: '0.08', uom: 'mm', minTol: '-', maxTol: '0', minOnly: 'No', maxOnly: 'Yes', eq: 'Square, Thickness gage', sampSize: '-', remarks: '' },
-  { name: 'Weight', min: '40.6', max: '-', size: '-', uom: 'g', minTol: '-', maxTol: '0', minOnly: 'Yes', maxOnly: 'No', eq: 'Electronic Balance', sampSize: '-', remarks: '' },
-  { name: 'Coating Thickness', min: '5', max: '25', size: '-', uom: 'μm', minTol: '-', maxTol: '0', minOnly: 'No', maxOnly: 'No', eq: 'X-Ray Machine', sampSize: '-', remarks: '' },
-  { name: 'Appearance (before magnetize)', min: '-', max: '-', size: '-', uom: 'remarks', minTol: '-', maxTol: '-', minOnly: '-', maxOnly: '-', eq: 'Naked eyes', sampSize: '-', remarks: 'Per visual inspection criteria for magnet' },
-  { name: 'Green Paper Check', min: '-', max: '-', size: '-', uom: 'remarks', minTol: '-', maxTol: '-', minOnly: '-', maxOnly: '-', eq: 'Green Paper', sampSize: '-', remarks: 'Per WI No. : W-0604-QA' },
-  { name: 'Magnet Sticking Checking', min: '-', max: '-', size: '-', uom: 'remarks', minTol: '-', maxTol: '-', minOnly: '-', maxOnly: '-', eq: '-', sampSize: '-', remarks: 'Per WI No. : W-0604-QA' },
-  { name: 'Total Flux', min: '413', max: '430', size: 'x10-4', uom: '[Wb.Ts.]', minTol: '-', maxTol: '-', minOnly: '-', maxOnly: '-', eq: 'Flux meter + Fixture', sampSize: '-', remarks: 'TQ-31' },
-  { name: 'Polarity', min: '-', max: '-', size: '-', uom: 'remarks', minTol: '-', maxTol: '-', minOnly: '-', maxOnly: '-', eq: 'Polarity Checker', sampSize: '-', remarks: 'Horizontal RED line, along the top area of W x T surface, with N-pole facing upwards.' },
-  { name: 'Appearance (After Magnetizing)', min: '-', max: '-', size: '-', uom: 'remarks', minTol: '-', maxTol: '-', minOnly: '-', maxOnly: '-', eq: 'Naked eyes', sampSize: '-', remarks: 'Per visual inspection criteria for magnet' },
-  { name: 'Magnetized Condition', min: '-', max: '-', size: '-', uom: 'remarks', minTol: '-', maxTol: '-', minOnly: '-', maxOnly: '-', eq: 'Green Paper', sampSize: '-', remarks: 'Fully magnetized & no sign of abnormal grain growth' },
-  { name: 'Marking Position', min: '-', max: '-', size: '-', uom: 'remarks', minTol: '-', maxTol: '-', minOnly: '-', maxOnly: '-', eq: 'Naked eyes', sampSize: '-', remarks: 'Position: Horizontal RED line, along the top area of W x T surface, with N-pole facing upwards.' },
-  { name: 'Marking Color', min: '-', max: '-', size: '-', uom: 'remarks', minTol: '-', maxTol: '-', minOnly: '-', maxOnly: '-', eq: 'Naked eyes', sampSize: '-', remarks: 'Red' }
-])
-
-// Sub-panel 2: Inspected Dimension List logic
+// Sub-panel: Inspected Dimension List logic
 const isInspectedDimensionListOpen = ref(true)
 const toggleInspectedDimensionList = () => {
   isInspectedDimensionListOpen.value = !isInspectedDimensionListOpen.value
@@ -103,36 +77,7 @@ const inspectedDimensions = ref([
   }
 ])
 
-const uomOptions = ['mm', 'μm', 'g', 'degree', 'N/m', 'remarks']
-const minMaxOnlyOptions = ['No', 'Yes']
-
-const editingCell = ref({ rowIdx: -1, field: '' })
-const originalGridValue = ref('')
-
-const startGridEdit = (rowIdx, field) => {
-  editingCell.value = { rowIdx, field }
-  originalGridValue.value = dimensions.value[rowIdx][field]
-}
-
-const saveGridEdit = () => {
-  editingCell.value = { rowIdx: -1, field: '' }
-}
-
-const cancelGridEdit = () => {
-  if (editingCell.value.rowIdx !== -1) {
-    dimensions.value[editingCell.value.rowIdx][editingCell.value.field] = originalGridValue.value
-    editingCell.value = { rowIdx: -1, field: '' }
-  }
-}
-
-const handleGlobalClick = (e) => {
-  if (editingCell.value.rowIdx === -1) return
-  if (!e.target.closest('.inline-edit') && !e.target.closest('.editable-text')) {
-    cancelGridEdit()
-  }
-}
-
-// Subpanel 2 Modal Logic
+// Inspected Dimension List Modal Logic
 const showInspectedModal = ref(false)
 const isEditingInspected = ref(false)
 const currentInspectedIdx = ref(-1)
@@ -190,14 +135,6 @@ const removeInspected = (idx) => {
     inspectedDimensions.value.splice(idx, 1)
   }
 }
-
-onMounted(() => {
-  window.addEventListener('click', handleGlobalClick)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('click', handleGlobalClick)
-})
 </script>
 
 <template>
@@ -313,100 +250,7 @@ onUnmounted(() => {
     </div>
   </div>
 
-  <!-- Sub-panel 1: Product Dimension List -->
-  <div v-if="!isCreating" class="sub-panel-wrapper">
-    <div class="sub-panel-header" @click="toggleDimensionList">
-      <span class="sub-panel-icon-btn">
-        <svg style="vertical-align: middle; margin-right: 5px;" viewBox="0 0 24 24" width="14" height="14" fill="#333">
-          <path v-if="!isDimensionListOpen" d="M10 17l5-5-5-5v10z"/>
-          <path v-else d="M7 10l5 5 5-5H7z"/>
-        </svg>
-        <svg style="vertical-align: middle;" viewBox="0 0 24 24" width="14" height="14" fill="#666"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
-      </span>
-      <span style="font-weight: bold; font-size: 14px; text-transform: uppercase;">Product Dimension List</span>
-    </div>
-    
-    <div v-if="isDimensionListOpen" class="sub-panel-body">
-      <div class="sub-panel-inner-box">
-        <div class="table-scroll-container">
-          <table class="data-table dim-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Min Spec</th>
-                <th>Max Spec</th>
-                <th>Spec Size</th>
-                <th>UOM</th>
-                <th>Min Tolerance V (+-)</th>
-                <th>Max Tolerance V (+-)</th>
-                <th>Min Only</th>
-                <th>Max Only</th>
-                <th>Equipment</th>
-                <th>Sampling Size</th>
-                <th>Remarks</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(d, idx) in dimensions" :key="idx">
-                <td>{{ d.name }}</td>
-                <td>{{ d.min }}</td>
-                <td>{{ d.max }}</td>
-                <td>{{ d.size }}</td>
-                <td>
-                  <div v-if="editingCell.rowIdx === idx && editingCell.field === 'uom'" class="inline-edit">
-                    <select v-model="d.uom" class="grid-select" @click.stop>
-                      <option v-for="opt in uomOptions" :value="opt" :key="opt">{{ opt }}</option>
-                    </select>
-                    <button class="btn-grid-save" @click.stop="saveGridEdit">Save</button>
-                  </div>
-                  <span v-else class="editable-text" @click="startGridEdit(idx, 'uom')">{{ d.uom }}</span>
-                </td>
-                <td>{{ d.minTol }}</td>
-                <td>{{ d.maxTol }}</td>
-                <td>
-                  <div v-if="editingCell.rowIdx === idx && editingCell.field === 'minOnly'" class="inline-edit">
-                    <select v-model="d.minOnly" class="grid-select" @click.stop>
-                      <option v-for="opt in minMaxOnlyOptions" :value="opt" :key="opt">{{ opt }}</option>
-                    </select>
-                    <button class="btn-grid-save" @click.stop="saveGridEdit">Save</button>
-                  </div>
-                  <span v-else class="editable-text" @click="startGridEdit(idx, 'minOnly')">{{ d.minOnly }}</span>
-                </td>
-                <td>
-                  <div v-if="editingCell.rowIdx === idx && editingCell.field === 'maxOnly'" class="inline-edit">
-                    <select v-model="d.maxOnly" class="grid-select" @click.stop>
-                      <option v-for="opt in minMaxOnlyOptions" :value="opt" :key="opt">{{ opt }}</option>
-                    </select>
-                    <button class="btn-grid-save" @click.stop="saveGridEdit">Save</button>
-                  </div>
-                  <span v-else class="editable-text" @click="startGridEdit(idx, 'maxOnly')">{{ d.maxOnly }}</span>
-                </td>
-                <td>{{ d.eq }}</td>
-                <td>{{ d.sampSize }}</td>
-                <td>{{ d.remarks }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Pagination / Status Bar -->
-        <div class="pagination-bar">
-          <div class="page-controls">
-            <span class="p-btn"><svg viewBox="0 0 24 24" width="14" height="14" fill="#333"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></span>
-            <span class="p-btn"><svg viewBox="0 0 24 24" width="14" height="14" fill="#333"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></span>
-            <span class="p-btn"><svg viewBox="0 0 24 24" width="14" height="14" fill="#333"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg></span>
-            <span class="page-text" style="font-size: 11px;">Page <input type="text" value="1" class="page-input" /> of 1</span>
-            <span class="p-btn"><svg viewBox="0 0 24 24" width="14" height="14" fill="#333"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg></span>
-            <span class="p-btn"><svg viewBox="0 0 24 24" width="14" height="14" fill="#333"><path d="M16 6v12h2V6zM6 18l8.5-6L6 6z"/></svg></span>
-            <span class="p-btn"><svg viewBox="0 0 24 24" width="14" height="14" fill="#333"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></span>
-            <span class="display-text" style="font-size: 11px; margin-left: 10px;">Displaying 1 to {{ dimensions.length }} of {{ dimensions.length }} items</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Sub-panel 2: Inspected Dimension List -->
+  <!-- Sub-panel: Inspected Dimension List -->
   <div v-if="!isCreating" class="sub-panel-wrapper">
     <div class="sub-panel-header" @click="toggleInspectedDimensionList">
       <span class="sub-panel-icon-btn">
